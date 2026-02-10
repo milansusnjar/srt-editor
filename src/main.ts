@@ -136,7 +136,7 @@ function runPlugins() {
 
     file.subtitles = subtitles;
 
-    if (activePlugins.has("cyrilization") && file.encoding === "windows-1250") {
+    if (activePlugins.has("cyrillization") && file.encoding === "windows-1250") {
       file.encoding = "windows-1251";
       log(`  [${file.name}] Encoding changed: windows-1250 → windows-1251`);
     }

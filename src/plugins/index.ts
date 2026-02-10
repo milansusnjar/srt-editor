@@ -1,8 +1,9 @@
 import { PluginConfig } from "../types";
-import { cyrilizationPlugin } from "./cyrilization";
+import { cyrillizationPlugin } from "./cyrillization";
+import { longLinesPlugin } from "./longlines";
 import { cpsPlugin } from "./cps";
 import { gapPlugin } from "./gap";
 
-// Plugin execution order matters: Cyrilization runs first (text transform),
-// then CPS (extends durations), then Gap (enforces minimum gaps).
-export const allPlugins: PluginConfig[] = [cyrilizationPlugin, cpsPlugin, gapPlugin];
+// Plugin execution order: text transforms first, then timing adjustments.
+// Cyrillization → Long Lines → CPS → Gap
+export const allPlugins: PluginConfig[] = [cyrillizationPlugin, longLinesPlugin, cpsPlugin, gapPlugin];

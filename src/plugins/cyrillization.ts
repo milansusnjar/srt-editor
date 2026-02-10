@@ -61,9 +61,9 @@ function cyrillizeLine(line: string): string {
     .join("");
 }
 
-export const cyrilizationPlugin: PluginConfig = {
-  id: "cyrilization",
-  name: "Cyrilization",
+export const cyrillizationPlugin: PluginConfig = {
+  id: "cyrillization",
+  name: "Cyrillization",
   description:
     "Converts subtitle text from Serbian Latin to Cyrillic. Handles digraphs (lj→љ, nj→њ, dž→џ). Preserves formatting tags.",
   enabled: false,

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { cyrilizationPlugin } from "./cyrilization";
+import { cyrillizationPlugin } from "./cyrillization";
 import { Subtitle } from "../types";
 
 const run = (lines: string[]): string[] => {
-  const subs = cyrilizationPlugin.run(
+  const subs = cyrillizationPlugin.run(
     [{ index: 1, startMs: 0, endMs: 1000, lines }],
     {},
     new Set(),
@@ -12,7 +12,7 @@ const run = (lines: string[]): string[] => {
   return subs[0].lines;
 };
 
-describe("Cyrilization plugin", () => {
+describe("Cyrillization plugin", () => {
   it("converts basic Latin to Cyrillic", () => {
     expect(run(["Zdravo"])).toEqual(["Здраво"]);
   });

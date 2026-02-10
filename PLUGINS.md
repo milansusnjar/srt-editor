@@ -1,6 +1,6 @@
 # SRT Editor Plugins
 
-## Cyrilization
+## Cyrillization
 
 **Purpose:** Converts subtitle text from Serbian Latin script to Cyrillic script.
 
@@ -15,7 +15,25 @@
    - Characters outside the Serbian Latin alphabet (digits, punctuation) are left unchanged.
 3. If the input file's encoding is `windows-1250`, it is automatically changed to `windows-1251` on output. UTF-8 files remain UTF-8.
 
-**Execution order:** Cyrilization runs first (text transform), before CPS and Gap (timing adjustments).
+**Execution order:** Cyrillization runs first (text transform), before CPS and Gap (timing adjustments).
+
+---
+
+## Long Lines
+
+**Purpose:** Ensures no subtitle line exceeds a maximum character length by re-splitting text across two balanced lines.
+
+**Parameter:**
+- **Max Line Length** (default: `42`) — Maximum visible characters per line (tags excluded from count).
+
+**How it works:**
+1. For each subtitle, check if any line exceeds the max length (visible characters only, tags stripped for counting).
+2. If a line is too long:
+   - Merge all lines into a single line.
+   - If the merged text fits within the max length, keep it as one line.
+   - Otherwise, split into two lines at the word boundary closest to the midpoint, producing approximately equal-length lines.
+
+**Execution order:** Runs after Cyrillization and before CPS/Gap.
 
 ---
 
