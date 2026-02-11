@@ -144,6 +144,15 @@ function runPlugins() {
   }
 
   log("Done. Click 'Download All' to save results.");
+
+  // Show diff button, reset diff state
+  const diffBtn = document.querySelector(".diff-toggle") as HTMLButtonElement;
+  diffBtn.style.display = "";
+  diffBtn.textContent = "Show Diff";
+  const diffContainer = document.getElementById("diff")!;
+  diffContainer.style.display = "none";
+  diffContainer.innerHTML = "";
+  document.getElementById("diff-label")!.style.display = "none";
 }
 
 function downloadAll() {
@@ -169,6 +178,87 @@ function downloadAll() {
   }
 
   log(`Downloaded ${files.length} file(s).`);
+}
+
+function highlightDiff(a: string, b: string, elA: HTMLElement, elB: HTMLElement) {
+  let prefixLen = 0;
+  while (prefixLen < a.length && prefixLen < b.length && a[prefixLen] === b[prefixLen]) {
+    prefixLen++;
+  }
+
+  let suffixLen = 0;
+  while (
+    suffixLen < a.length - prefixLen &&
+    suffixLen < b.length - prefixLen &&
+    a[a.length - 1 - suffixLen] === b[b.length - 1 - suffixLen]
+  ) {
+    suffixLen++;
+  }
+
+  const prefix = a.slice(0, prefixLen);
+  const aMid = a.slice(prefixLen, a.length - suffixLen);
+  const bMid = b.slice(prefixLen, b.length - suffixLen);
+  const suffix = a.slice(a.length - suffixLen);
+
+  for (const [el, mid] of [[elA, aMid], [elB, bMid]] as const) {
+    if (prefix) el.appendChild(document.createTextNode(prefix));
+    if (mid) {
+      const span = document.createElement("span");
+      span.className = "diff-char";
+      span.textContent = mid;
+      el.appendChild(span);
+    }
+    if (suffix) el.appendChild(document.createTextNode(suffix));
+  }
+}
+
+function renderDiff() {
+  const container = document.getElementById("diff")!;
+  container.innerHTML = "";
+
+  for (const file of files) {
+    const heading = document.createElement("h4");
+    heading.textContent = file.name;
+    container.appendChild(heading);
+
+    const headerRow = document.createElement("div");
+    headerRow.className = "diff-header-row";
+    headerRow.innerHTML = "<span>Original</span><span>Processed</span>";
+    container.appendChild(headerRow);
+
+    const grid = document.createElement("div");
+    grid.className = "diff-grid";
+
+    const origText = serializeSrt(file.originalSubtitles);
+    const procText = serializeSrt(file.subtitles);
+    const origLines = origText.split("\n");
+    const procLines = procText.split("\n");
+    const maxLen = Math.max(origLines.length, procLines.length);
+
+    for (let i = 0; i < maxLen; i++) {
+      const ol = origLines[i] ?? "";
+      const pl = procLines[i] ?? "";
+
+      const left = document.createElement("div");
+      left.className = "diff-line";
+      const right = document.createElement("div");
+      right.className = "diff-line";
+
+      if (ol === pl) {
+        left.textContent = ol;
+        right.textContent = pl;
+      } else {
+        left.classList.add("diff-line-changed");
+        right.classList.add("diff-line-changed");
+        highlightDiff(ol, pl, left, right);
+      }
+
+      grid.appendChild(left);
+      grid.appendChild(right);
+    }
+
+    container.appendChild(grid);
+  }
 }
 
 function buildUI() {
@@ -310,8 +400,29 @@ function buildUI() {
   clearBtn.className = "btn-secondary";
   clearBtn.addEventListener("click", clearLog);
 
+  const diffBtn = document.createElement("button");
+  diffBtn.textContent = "Show Diff";
+  diffBtn.className = "btn-secondary diff-toggle";
+  diffBtn.style.display = "none";
+  diffBtn.addEventListener("click", () => {
+    const diffContainer = document.getElementById("diff")!;
+    const diffLabel = document.getElementById("diff-label")!;
+    const visible = diffContainer.style.display !== "none";
+    if (visible) {
+      diffContainer.style.display = "none";
+      diffLabel.style.display = "none";
+      diffBtn.textContent = "Show Diff";
+    } else {
+      renderDiff();
+      diffContainer.style.display = "";
+      diffLabel.style.display = "";
+      diffBtn.textContent = "Hide Diff";
+    }
+  });
+
   btnContainer.appendChild(runBtn);
   btnContainer.appendChild(downloadBtn);
+  btnContainer.appendChild(diffBtn);
   btnContainer.appendChild(clearBtn);
   app.appendChild(btnContainer);
 
@@ -323,6 +434,19 @@ function buildUI() {
   const logEl = document.createElement("div");
   logEl.id = "log";
   app.appendChild(logEl);
+
+  // Diff section
+  const diffLabel = document.createElement("h3");
+  diffLabel.id = "diff-label";
+  diffLabel.textContent = "Diff";
+  diffLabel.style.display = "none";
+  app.appendChild(diffLabel);
+
+  const diffContainer = document.createElement("div");
+  diffContainer.id = "diff";
+  diffContainer.className = "diff-container";
+  diffContainer.style.display = "none";
+  app.appendChild(diffContainer);
 }
 
 document.addEventListener("DOMContentLoaded", buildUI);
