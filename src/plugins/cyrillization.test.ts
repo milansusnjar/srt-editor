@@ -85,4 +85,28 @@ describe("Cyrillization plugin", () => {
     expect(run(["ti i ja"])).toEqual(["ти и ја"]);
     expect(run(["I DEO"])).toEqual(["И ДЕО"]);
   });
+
+  it("does not merge nj digraph in tanjug", () => {
+    expect(run(["tanjug"])).toEqual(["танјуг"]);
+    expect(run(["Tanjug"])).toEqual(["Танјуг"]);
+  });
+
+  it("does not merge dž digraph in words starting with nadž", () => {
+    expect(run(["nadživeti"])).toEqual(["надживети"]);
+    expect(run(["Nadživeo"])).toEqual(["Надживео"]);
+  });
+
+  it("does not merge nj digraph in words starting with injekc", () => {
+    expect(run(["injekcija"])).toEqual(["инјекција"]);
+    expect(run(["Injekcija"])).toEqual(["Инјекција"]);
+  });
+
+  it("does not merge nj digraph in words starting with konjuk", () => {
+    expect(run(["konjuktivitis"])).toEqual(["конјуктивитис"]);
+  });
+
+  it("does not merge nj digraph in words starting with konjug", () => {
+    expect(run(["konjugacija"])).toEqual(["конјугација"]);
+    expect(run(["Konjugacija"])).toEqual(["Конјугација"]);
+  });
 });

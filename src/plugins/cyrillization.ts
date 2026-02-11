@@ -65,13 +65,36 @@ function isRomanNumeral(word: string): boolean {
   return word.length >= 2 && romanNumeralRe.test(word);
 }
 
+/**
+ * Prefixes where a digraph at the morpheme boundary must NOT be merged.
+ * [lowercasePrefix, splitPosition] — the word is split at splitPosition
+ * so the two digraph characters end up in separate cyrillize() calls.
+ */
+const digraphSplitPrefixes: [string, number][] = [
+  ["nadž", 3],    // nad + živeti  (dž spans boundary)
+  ["injekc", 2],  // in + jekcija  (nj spans boundary)
+  ["konjuk", 3],  // kon + juktura (nj spans boundary)
+  ["konjug", 3],  // kon + jugacija(nj spans boundary)
+  ["tanjug", 3],  // tan + jug     (nj spans boundary)
+];
+
+function cyrillizeWord(word: string): string {
+  const lower = word.toLowerCase();
+  for (const [prefix, splitAt] of digraphSplitPrefixes) {
+    if (lower.startsWith(prefix)) {
+      return cyrillize(word.slice(0, splitAt)) + cyrillize(word.slice(splitAt));
+    }
+  }
+  return cyrillize(word);
+}
+
 function cyrillizeText(text: string): string {
   // Match runs of letters/digits (including Serbian diacritics) as words
   return text.replace(/[a-zA-Z0-9\u010c\u010d\u0106\u0107\u0110\u0111\u0160\u0161\u017d\u017e]+/g, (word) => {
     if (/[wqyWQY]/.test(word)) return word;
     if (foreignWords.has(word.toLowerCase())) return word;
     if (isRomanNumeral(word)) return word;
-    return cyrillize(word);
+    return cyrillizeWord(word);
   });
 }
 
