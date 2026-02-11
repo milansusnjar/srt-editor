@@ -217,14 +217,17 @@ function renderDiff() {
   container.innerHTML = "";
 
   for (const file of files) {
-    const heading = document.createElement("h4");
-    heading.textContent = file.name;
-    container.appendChild(heading);
+    const details = document.createElement("details");
+    details.className = "diff-file";
+
+    const summary = document.createElement("summary");
+    summary.textContent = file.name;
+    details.appendChild(summary);
 
     const headerRow = document.createElement("div");
     headerRow.className = "diff-header-row";
     headerRow.innerHTML = "<span>Original</span><span>Processed</span>";
-    container.appendChild(headerRow);
+    details.appendChild(headerRow);
 
     const grid = document.createElement("div");
     grid.className = "diff-grid";
@@ -257,7 +260,8 @@ function renderDiff() {
       grid.appendChild(right);
     }
 
-    container.appendChild(grid);
+    details.appendChild(grid);
+    container.appendChild(details);
   }
 }
 

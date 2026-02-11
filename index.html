@@ -171,6 +171,7 @@
       max-height: 600px;
       overflow-y: auto;
       margin-top: 8px;
+      padding-bottom: 400px;
     }
 
     .diff-container h4 {
@@ -179,20 +180,42 @@
       margin: 16px 0 6px;
     }
 
+    .diff-file {
+      margin-bottom: 4px;
+      border: 1px solid #2a2a4a;
+      border-radius: 6px;
+    }
+
+    .diff-file summary {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 8px 12px;
+      background: #16213e;
+      cursor: pointer;
+      font-size: 13px;
+      color: #c0c0d0;
+      user-select: none;
+    }
+
+    .diff-file summary:hover {
+      background: #1a2848;
+    }
+
+    .diff-file[open] summary {
+      border-bottom: 1px solid #2a2a4a;
+    }
+
     .diff-header-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0 16px;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      background: #16213e;
-      border-bottom: 1px solid #2a2a4a;
-      padding: 6px 8px;
+      background: #12152a;
+      padding: 4px 8px;
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: #a0a0c0;
+      color: #666;
     }
 
     .diff-grid {
