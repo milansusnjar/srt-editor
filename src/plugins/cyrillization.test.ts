@@ -109,4 +109,11 @@ describe("Cyrillization plugin", () => {
     expect(run(["konjugacija"])).toEqual(["конјугација"]);
     expect(run(["Konjugacija"])).toEqual(["Конјугација"]);
   });
+
+  it("is idempotent — running on already-cyrillized text produces no changes", () => {
+    const first = run(["Zdravo svete"]);
+    expect(first).toEqual(["Здраво свете"]);
+    const second = run(first);
+    expect(second).toEqual(first);
+  });
 });

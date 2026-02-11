@@ -8,7 +8,9 @@ export interface Subtitle {
 export interface SrtFile {
   name: string;
   encoding: string;
+  originalEncoding: string;
   subtitles: Subtitle[];
+  originalSubtitles: Subtitle[];
 }
 
 export interface PluginConfig {

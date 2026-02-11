@@ -83,7 +83,7 @@ function handleFiles(fileList: FileList) {
       const encoding = detectEncoding(bytes);
       const content = decode(bytes, encoding);
       const subtitles = parseSrt(content);
-      files.push({ name: file.name, encoding, subtitles });
+      files.push({ name: file.name, encoding, originalEncoding: encoding, subtitles, originalSubtitles: subtitles });
       loaded++;
       if (loaded === srtFiles.length) {
         log(`Uploaded ${srtFiles.length} file(s): ${srtFiles.map((f) => f.name).join(", ")}`);
@@ -120,7 +120,8 @@ function runPlugins() {
   log("--- Running plugins ---");
 
   for (const file of files) {
-    let subtitles: Subtitle[] = file.subtitles.map((s) => ({ ...s, lines: [...s.lines] }));
+    let subtitles: Subtitle[] = file.originalSubtitles.map((s) => ({ ...s, lines: [...s.lines] }));
+    file.encoding = file.originalEncoding;
 
     for (const plugin of allPlugins) {
       if (!activePlugins.has(plugin.id)) continue;
@@ -158,7 +159,11 @@ function downloadAll() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = file.name;
+    let downloadName = file.name;
+    if (pluginStates.get("cyrillization")?.enabled) {
+      downloadName = downloadName.replace(/\.srt$/i, ".cyr.sr.srt");
+    }
+    a.download = downloadName;
     a.click();
     URL.revokeObjectURL(url);
   }

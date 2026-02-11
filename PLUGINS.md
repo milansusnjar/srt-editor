@@ -17,6 +17,7 @@
    - Digraph exceptions at morpheme boundaries: `nj` is not merged to `њ` in words starting with `injekc`, `konjuk`, `konjug`, or `tanjug`; `dž` is not merged to `џ` in words starting with `nadž`.
    - Characters outside the Serbian Latin alphabet (digits, punctuation) are left unchanged.
 3. If the input file's encoding is `windows-1250`, it is automatically changed to `windows-1251` on output. UTF-8 files remain UTF-8.
+4. Downloaded files get `.cyr.sr` inserted before the `.srt` extension (e.g. `Movie.Name.srt` → `Movie.Name.cyr.sr.srt`).
 
 **Execution order:** Cyrillization runs first (text transform), before CPS and Gap (timing adjustments).
 
