@@ -45,10 +45,32 @@ function cyrillize(text: string): string {
   return result;
 }
 
+/** Whole foreign words that should never be cyrillized (matched case-insensitively) */
+const foreignWords = new Set([
+  "about", "air", "alpha", "and", "back", "bitcoin", "brainz",
+  "celebrities", "co2", "conditions", "cpu", "creative", "disclaimer",
+  "discord", "dj", "electronics", "entertainment", "files", "fresh",
+  "fun", "geographic", "gmbh", "green", "h2o", "hair", "have", "home",
+  "idj", "idjtv", "latest", "life", "like", "live",
+  "login", "made", "makeup", "must", "national", "previous", "public",
+  "punk", "reserved", "score", "screen", "terms", "the", "url",
+  "visa",
+]);
+
+/** Valid Roman numeral pattern (uppercase only, e.g. IV, XII, MCMXCIX) */
+const romanNumeralRe =
+  /^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/;
+
+function isRomanNumeral(word: string): boolean {
+  return word.length >= 2 && romanNumeralRe.test(word);
+}
+
 function cyrillizeText(text: string): string {
-  // Match runs of letters (including Serbian diacritics) as words
-  return text.replace(/[a-zA-Z\u010c\u010d\u0106\u0107\u0110\u0111\u0160\u0161\u017d\u017e]+/g, (word) => {
+  // Match runs of letters/digits (including Serbian diacritics) as words
+  return text.replace(/[a-zA-Z0-9\u010c\u010d\u0106\u0107\u0110\u0111\u0160\u0161\u017d\u017e]+/g, (word) => {
     if (/[wqyWQY]/.test(word)) return word;
+    if (foreignWords.has(word.toLowerCase())) return word;
+    if (isRomanNumeral(word)) return word;
     return cyrillize(word);
   });
 }

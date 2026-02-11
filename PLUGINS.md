@@ -12,6 +12,8 @@
    - Digraphs: `lj` → `љ`, `nj` → `њ`, `dž` → `џ` (and their capitalized/uppercase variants)
    - Single characters: `a` → `а`, `b` → `б`, `š` → `ш`, etc.
    - Words containing `w`, `q`, or `y` (foreign words) are left entirely in Latin.
+   - A blocklist of common foreign words (e.g. `live`, `discord`, `fresh`, `visa`, `co2`, `h2o`, etc.) is matched case-insensitively and left in Latin.
+   - Uppercase Roman numerals with 2+ characters (e.g. `IV`, `VII`, `XII`, `MCMXCIX`) are detected and left in Latin. Single `I` is always cyrillized (treated as the Serbian conjunction "и").
    - Characters outside the Serbian Latin alphabet (digits, punctuation) are left unchanged.
 3. If the input file's encoding is `windows-1250`, it is automatically changed to `windows-1251` on output. UTF-8 files remain UTF-8.
 

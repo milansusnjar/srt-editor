@@ -52,4 +52,37 @@ describe("Cyrillization plugin", () => {
   it("preserves curly-brace tags", () => {
     expect(run(["{b}Zdravo{/b}"])).toEqual(["{b}Здраво{/b}"]);
   });
+
+  it("preserves foreign words from the blocklist", () => {
+    expect(run(["live"])).toEqual(["live"]);
+    expect(run(["Discord"])).toEqual(["Discord"]);
+    expect(run(["VISA"])).toEqual(["VISA"]);
+  });
+
+  it("preserves foreign words case-insensitively", () => {
+    expect(run(["Fresh Air"])).toEqual(["Fresh Air"]);
+    expect(run(["DISCLAIMER"])).toEqual(["DISCLAIMER"]);
+  });
+
+  it("still cyrillizes Serbian words next to foreign words", () => {
+    expect(run(["Idemo na live"])).toEqual(["Идемо на live"]);
+  });
+
+  it("preserves foreign words containing digits", () => {
+    expect(run(["co2"])).toEqual(["co2"]);
+    expect(run(["h2o"])).toEqual(["h2o"]);
+  });
+
+  it("preserves Roman numerals (2+ chars, uppercase)", () => {
+    expect(run(["Luj IV"])).toEqual(["Луј IV"]);
+    expect(run(["U II svetskom ratu"])).toEqual(["У II светском рату"]);
+    expect(run(["VII vek"])).toEqual(["VII век"]);
+    expect(run(["XII"])).toEqual(["XII"]);
+    expect(run(["MCMXCIX"])).toEqual(["MCMXCIX"]);
+  });
+
+  it("still cyrillizes single I as Serbian conjunction", () => {
+    expect(run(["ti i ja"])).toEqual(["ти и ја"]);
+    expect(run(["I DEO"])).toEqual(["И ДЕО"]);
+  });
 });
