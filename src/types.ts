@@ -29,3 +29,9 @@ export interface PluginParam {
   min?: number;
   step?: number;
 }
+
+export interface FileProcessingLog {
+  fileName: string;
+  summaries: string[];
+  notes: string[];
+}
