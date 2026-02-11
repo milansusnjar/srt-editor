@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { longLinesPlugin } from "./longlines";
+import { longLinesPlugin } from "./longLines";
 import { Subtitle } from "../types";
 
 const run = (lines: string[], maxLength = 42): string[] => {

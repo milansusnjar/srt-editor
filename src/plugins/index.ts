@@ -1,6 +1,6 @@
 import { PluginConfig } from "../types";
 import { cyrillizationPlugin } from "./cyrillization";
-import { longLinesPlugin } from "./longlines";
+import { longLinesPlugin } from "./longLines";
 import { cpsPlugin } from "./cps";
 import { gapPlugin } from "./gap";
 
