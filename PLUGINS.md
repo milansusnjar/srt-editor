@@ -80,6 +80,29 @@ A subtitle with 60 characters and duration of 2 seconds has CPS = 30. With Max C
 
 ---
 
+## Min Duration
+
+**Purpose:** Ensures no subtitle is shorter than a configurable minimum duration. Short subtitles flash on screen too quickly to read.
+
+**Parameter:**
+- **Min Duration** (default: `2000` ms) — The minimum allowed subtitle duration in milliseconds. If a subtitle's duration is below this value, its end time is extended.
+
+**How it works:**
+1. For each subtitle, calculate its duration: `duration = end - start`.
+2. If the duration is below the configured minimum, compute a new end time: `new_end = start + min_duration`.
+3. The extension is constrained so that the subtitle does not overlap with the next subtitle:
+   - **If the Gap plugin is active:** The subtitle can only extend up to `next_start - min_gap` (respecting the minimum gap).
+   - **If the Gap plugin is inactive:** The subtitle can extend up to `next_start - 1ms`.
+4. The subtitle is never shortened — if the constraint prevents full extension, it keeps its original end time or extends as far as allowed.
+5. The last subtitle has no next-subtitle constraint and extends freely.
+
+**Interaction with CPS and Gap:**
+CPS runs first and may extend subtitles enough to meet the minimum duration. Min Duration then catches any remaining short subtitles. Gap runs last and trims any gap violations that result from extensions.
+
+**Execution order:** Runs after CPS and before Gap.
+
+---
+
 ## Gap (Minimum Gap)
 
 **Purpose:** Enforces a minimum time gap between consecutive subtitles so they don't appear to run together.
@@ -92,11 +115,11 @@ A subtitle with 60 characters and duration of 2 seconds has CPS = 30. With Max C
 2. If the gap is less than the configured minimum, trim the current subtitle's end time back to `next_start - min_gap`.
 3. The subtitle is never trimmed so far that its end time goes to or before its start time.
 
-**Interaction with CPS:**
-When the Gap plugin is active, it constrains how far the CPS plugin can extend a subtitle. CPS will not push a subtitle's end time past `next_start - min_gap`. When Gap is inactive, CPS is free to extend a subtitle up to 1ms before the next subtitle starts.
+**Interaction with CPS and Min Duration:**
+When the Gap plugin is active, it constrains how far the CPS and Min Duration plugins can extend a subtitle. Neither will push a subtitle's end time past `next_start - min_gap`. When Gap is inactive, they can extend up to 1ms before the next subtitle starts.
 
 **Execution order:**
-CPS runs first (extends durations), then Gap runs (trims any remaining violations).
+CPS runs first (extends durations), then Min Duration (extends short subtitles), then Gap runs (trims any remaining violations).
 
 ---
 
@@ -120,4 +143,4 @@ CPS runs first (extends durations), then Gap runs (trims any remaining violation
 When Cyrillization is active, Windows-1250 is incompatible with Cyrillic characters. If the resulting encoding would be Windows-1250 (whether from "Keep original" on a 1250 file or explicitly selected), it is automatically overridden to Windows-1251. A note is added to the processing log.
 
 **Execution order:**
-Encoding runs last, after all content and timing transforms (Cyrillization → Long Lines → CPS → Gap → Encoding).
+Encoding runs last, after all content and timing transforms (Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding).

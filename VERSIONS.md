@@ -1,5 +1,10 @@
 # SRT Editor — Version Log
 
+## 1.11 — Min Duration Plugin
+- Extends short subtitles to a configurable minimum duration (default: 2000ms)
+- Respects Gap plugin constraints and next-subtitle boundaries
+- Runs after CPS, before Gap in the plugin pipeline
+
 ## 1.10 — Extended Subtitle Info
 - CPS distribution (count of subtitles exceeding each threshold: >15, >16, ..., >30)
 - Short duration buckets (count of subtitles < 1000ms, < 1500ms, < 2000ms)
