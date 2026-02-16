@@ -21,6 +21,7 @@ export function getDownloadName(file: SrtFile, pluginStates: Map<string, { enabl
 }
 
 export function fileChanged(file: SrtFile): boolean {
+  if (file.encoding !== file.originalEncoding) return true;
   if (file.originalSubtitles.length !== file.subtitles.length) return true;
   for (let i = 0; i < file.subtitles.length; i++) {
     const orig = file.originalSubtitles[i];

@@ -28,15 +28,28 @@ export function PluginCard({ plugin, state, onToggle, onParamChange }: PluginCar
           <div key={param.key} class="param-row">
             <label>
               {param.label}:{" "}
-              <input
-                type="number"
-                value={state.params[param.key]}
-                min={param.min ?? 0}
-                step={param.step ?? 1}
-                onChange={(e) =>
-                  onParamChange(plugin.id, param.key, parseFloat((e.target as HTMLInputElement).value))
-                }
-              />
+              {param.options ? (
+                <select
+                  value={state.params[param.key]}
+                  onChange={(e) =>
+                    onParamChange(plugin.id, param.key, parseInt((e.target as HTMLSelectElement).value))
+                  }
+                >
+                  {param.options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="number"
+                  value={state.params[param.key]}
+                  min={param.min ?? 0}
+                  step={param.step ?? 1}
+                  onChange={(e) =>
+                    onParamChange(plugin.id, param.key, parseFloat((e.target as HTMLInputElement).value))
+                  }
+                />
+              )}
             </label>
           </div>
         ))}

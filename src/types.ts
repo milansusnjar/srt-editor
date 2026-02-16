@@ -28,6 +28,7 @@ export interface PluginParam {
   defaultValue: number;
   min?: number;
   step?: number;
+  options?: { value: number; label: string }[];
 }
 
 export interface FileProcessingLog {

@@ -3,6 +3,7 @@ import { useState, useCallback } from "preact/hooks";
 import { SrtFile, Subtitle, FileProcessingLog } from "./types";
 import { parseSrt } from "./srt";
 import { allPlugins } from "./plugins";
+import { ENCODING_MAP } from "./plugins/encoding";
 import { detectEncoding, decode } from "./encoding";
 import { usePluginState } from "./hooks/usePluginState";
 import { fileChanged, downloadFile } from "./utils/files";
@@ -115,9 +116,18 @@ function App() {
       }
 
       const notes: string[] = [];
+      if (activePlugins.has("encoding")) {
+        const targetValue = allConfigs.get("encoding")!.targetEncoding;
+        const targetEncoding = ENCODING_MAP[targetValue];
+        if (targetEncoding && targetEncoding !== encoding) {
+          const prev = encoding;
+          encoding = targetEncoding;
+          notes.push(`Encoding changed: ${prev} \u2192 ${encoding}`);
+        }
+      }
       if (activePlugins.has("cyrillization") && encoding === "windows-1250") {
         encoding = "windows-1251";
-        notes.push("Encoding changed: Windows-1250 \u2192 Windows-1251");
+        notes.push("Encoding override: Windows-1250 \u2192 Windows-1251 (Cyrillic required)");
       }
 
       logs.push({ fileName: file.name, summaries: pluginSummaries, notes });

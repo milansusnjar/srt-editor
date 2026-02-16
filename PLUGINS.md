@@ -82,3 +82,27 @@ When the Gap plugin is active, it constrains how far the CPS plugin can extend a
 
 **Execution order:**
 CPS runs first (extends durations), then Gap runs (trims any remaining violations).
+
+---
+
+## Encoding
+
+**Purpose:** Choose the output encoding for processed SRT files.
+
+**Parameter:**
+- **Target Encoding** (default: `Keep original`) — Select dropdown with options:
+  - **Keep original** — File stays in its detected encoding.
+  - **UTF-8** — Convert output to UTF-8.
+  - **Windows-1250** — Convert output to Windows-1250 (Central/Eastern European).
+  - **Windows-1251** — Convert output to Windows-1251 (Cyrillic).
+
+**How it works:**
+1. After all content and timing plugins have run, the chosen encoding is applied to the output file.
+2. If "Keep original" is selected (or the plugin is disabled), the file keeps its detected encoding.
+3. Files where only the encoding changed (no subtitle modifications) are still marked as changed and available for download.
+
+**Interaction with Cyrillization:**
+When Cyrillization is active, Windows-1250 is incompatible with Cyrillic characters. If the resulting encoding would be Windows-1250 (whether from "Keep original" on a 1250 file or explicitly selected), it is automatically overridden to Windows-1251. A note is added to the processing log.
+
+**Execution order:**
+Encoding runs last, after all content and timing transforms (Cyrillization → Long Lines → CPS → Gap → Encoding).
