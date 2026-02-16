@@ -1,5 +1,11 @@
 # SRT Editor — Version Log
 
+## 2.0 — Extended Subtitle Info
+- CPS distribution (count of subtitles exceeding each threshold: >15, >16, ..., >30)
+- Short duration buckets (count of subtitles < 1000ms, < 1500ms, < 2000ms)
+- Total subtitle count and total duration
+- Inspired by SubReport Pascal script for Subtitle Workshop
+
 ## 1.9 — Subtitle Info
 - Per-file info button showing subtitle statistics (max CPS, line length, duration, >2 lines)
 - Before/after comparison after processing

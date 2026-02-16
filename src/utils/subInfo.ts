@@ -5,12 +5,19 @@ export interface SubtitleStat {
   line: number;
 }
 
+export const CPS_THRESHOLDS = [15, 16, 17, 18, 19, 20, 22, 24, 25, 30] as const;
+export const SHORT_DURATION_THRESHOLDS = [1000, 1500, 2000] as const;
+
 export interface SubtitleInfo {
   maxCps: SubtitleStat;
   maxLineLength: SubtitleStat;
   maxDuration: SubtitleStat;
   minDuration: SubtitleStat;
   moreThanTwoLines: SubtitleStat;
+  cpsDistribution: Record<number, number>;
+  shortDuration: Record<number, number>;
+  totalCount: number;
+  totalDurationMs: number;
 }
 
 function stripTags(text: string): string {
@@ -20,23 +27,43 @@ function stripTags(text: string): string {
 }
 
 export function computeSubInfo(subtitles: Subtitle[]): SubtitleInfo {
+  const cpsDistribution: Record<number, number> = {};
+  for (const t of CPS_THRESHOLDS) cpsDistribution[t] = 0;
+
+  const shortDuration: Record<number, number> = {};
+  for (const t of SHORT_DURATION_THRESHOLDS) shortDuration[t] = 0;
+
   const info: SubtitleInfo = {
     maxCps: { value: 0, line: 0 },
     maxLineLength: { value: 0, line: 0 },
     maxDuration: { value: 0, line: 0 },
     minDuration: { value: Infinity, line: 0 },
     moreThanTwoLines: { value: 0, line: 0 },
+    cpsDistribution,
+    shortDuration,
+    totalCount: subtitles.length,
+    totalDurationMs: 0,
   };
+
+  if (subtitles.length > 0) {
+    info.totalDurationMs = subtitles[subtitles.length - 1].endMs;
+  }
 
   for (let i = 0; i < subtitles.length; i++) {
     const sub = subtitles[i];
-    const durationSec = (sub.endMs - sub.startMs) / 1000;
+    const durationMs = sub.endMs - sub.startMs;
+    const durationSec = durationMs / 1000;
 
     // CPS
     const chars = sub.lines.map(stripTags).join("").length;
     const cps = durationSec > 0 ? chars / durationSec : 0;
     if (cps > info.maxCps.value) {
       info.maxCps = { value: cps, line: sub.index };
+    }
+
+    // CPS distribution
+    for (const t of CPS_THRESHOLDS) {
+      if (cps > t) info.cpsDistribution[t]++;
     }
 
     // Max line length
@@ -53,6 +80,11 @@ export function computeSubInfo(subtitles: Subtitle[]): SubtitleInfo {
     }
     if (durationSec < info.minDuration.value) {
       info.minDuration = { value: durationSec, line: sub.index };
+    }
+
+    // Short duration buckets
+    for (const t of SHORT_DURATION_THRESHOLDS) {
+      if (durationMs < t) info.shortDuration[t]++;
     }
 
     // More than two lines

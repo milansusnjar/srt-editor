@@ -113,6 +113,8 @@ describe("computeSubInfo", () => {
     expect(info.maxDuration.value).toBe(0);
     expect(info.minDuration.value).toBe(0);
     expect(info.moreThanTwoLines.value).toBe(0);
+    expect(info.totalCount).toBe(0);
+    expect(info.totalDurationMs).toBe(0);
   });
 
   it("handles subtitle with empty lines", () => {
@@ -121,5 +123,47 @@ describe("computeSubInfo", () => {
 
     expect(info.maxCps.value).toBe(0);
     expect(info.maxLineLength.value).toBe(0);
+  });
+
+  it("computes CPS distribution", () => {
+    const subs = [
+      sub(1, 0, 1000, ["abcdefghijklmnop"]),     // 16 chars / 1s = 16 CPS
+      sub(2, 2000, 3000, ["abcdefghijklmnopqrstu"]), // 21 chars / 1s = 21 CPS
+      sub(3, 4000, 5000, ["ab"]),                  // 2 chars / 1s = 2 CPS
+    ];
+    const info = computeSubInfo(subs);
+
+    expect(info.cpsDistribution[15]).toBe(2);  // subs 1 and 2 exceed 15
+    expect(info.cpsDistribution[16]).toBe(1);  // only sub 2 exceeds 16 (sub 1 is exactly 16, not >16)
+    expect(info.cpsDistribution[20]).toBe(1);  // only sub 2
+    expect(info.cpsDistribution[22]).toBe(0);  // none exceed 22
+    expect(info.cpsDistribution[25]).toBe(0);
+    expect(info.cpsDistribution[30]).toBe(0);
+  });
+
+  it("computes short duration buckets", () => {
+    const subs = [
+      sub(1, 0, 800, ["Quick"]),         // 800ms
+      sub(2, 1000, 2300, ["Normal"]),     // 1300ms
+      sub(3, 3000, 4800, ["Longer"]),     // 1800ms
+      sub(4, 5000, 8000, ["Long one"]),   // 3000ms
+    ];
+    const info = computeSubInfo(subs);
+
+    expect(info.shortDuration[1000]).toBe(1);  // only sub 1
+    expect(info.shortDuration[1500]).toBe(2);  // subs 1 and 2
+    expect(info.shortDuration[2000]).toBe(3);  // subs 1, 2, and 3
+  });
+
+  it("computes total count and duration", () => {
+    const subs = [
+      sub(1, 0, 2000, ["First"]),
+      sub(2, 3000, 5000, ["Second"]),
+      sub(3, 6000, 90000, ["Third"]),
+    ];
+    const info = computeSubInfo(subs);
+
+    expect(info.totalCount).toBe(3);
+    expect(info.totalDurationMs).toBe(90000); // end time of last subtitle
   });
 });
