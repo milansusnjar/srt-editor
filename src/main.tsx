@@ -15,6 +15,8 @@ import { DiffView } from "./components/DiffView";
 import { LogView } from "./components/LogView";
 import { InfoView } from "./components/InfoView";
 
+const VERSION = "1.9";
+
 type ModalState =
   | { type: "diff"; file: SrtFile }
   | { type: "info"; file: SrtFile }
@@ -156,6 +158,7 @@ function App() {
 
   return (
     <>
+      <h1 title={`Version ${VERSION}`}>SRT Editor</h1>
       <DropZone
         files={files}
         hasRun={hasRun}
