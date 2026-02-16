@@ -1,6 +1,6 @@
 import { SrtFile } from "../types";
 import { encodingLabel, encodingClass, fileChanged, getDownloadName, downloadFile } from "../utils/files";
-import { DownloadIcon, DiffIcon } from "../utils/icons";
+import { DownloadIcon, DiffIcon, InfoIcon } from "../utils/icons";
 import { PluginStateEntry } from "../hooks/usePluginState";
 
 interface FileItemProps {
@@ -8,9 +8,10 @@ interface FileItemProps {
   hasRun: boolean;
   pluginStates: Map<string, PluginStateEntry>;
   onShowDiff: (file: SrtFile) => void;
+  onShowInfo: (file: SrtFile) => void;
 }
 
-export function FileItem({ file, hasRun, pluginStates, onShowDiff }: FileItemProps) {
+export function FileItem({ file, hasRun, pluginStates, onShowDiff, onShowInfo }: FileItemProps) {
   const changed = hasRun && fileChanged(file);
   const unchanged = hasRun && !changed;
   const displayName = hasRun ? getDownloadName(file, pluginStates) : file.name;
@@ -24,6 +25,13 @@ export function FileItem({ file, hasRun, pluginStates, onShowDiff }: FileItemPro
       ) : (
         <span class={`encoding-tag ${encodingClass(enc)}`}>{encodingLabel(enc)}</span>
       )}
+      <button
+        class="file-action-btn"
+        title="File info"
+        onClick={(e) => { e.stopPropagation(); onShowInfo(file); }}
+      >
+        <InfoIcon />
+      </button>
       {changed && (
         <>
           <button

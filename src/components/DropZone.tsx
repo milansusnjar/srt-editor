@@ -9,9 +9,10 @@ interface DropZoneProps {
   pluginStates: Map<string, PluginStateEntry>;
   onFiles: (fileList: FileList) => void;
   onShowDiff: (file: SrtFile) => void;
+  onShowInfo: (file: SrtFile) => void;
 }
 
-export function DropZone({ files, hasRun, pluginStates, onFiles, onShowDiff }: DropZoneProps) {
+export function DropZone({ files, hasRun, pluginStates, onFiles, onShowDiff, onShowInfo }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragover, setDragover] = useState(false);
   const hasFiles = files.length > 0;
@@ -64,6 +65,7 @@ export function DropZone({ files, hasRun, pluginStates, onFiles, onShowDiff }: D
                 hasRun={hasRun}
                 pluginStates={pluginStates}
                 onShowDiff={onShowDiff}
+                onShowInfo={onShowInfo}
               />
             ))}
           </div>

@@ -13,9 +13,11 @@ import { PluginList } from "./components/PluginList";
 import { Modal } from "./components/Modal";
 import { DiffView } from "./components/DiffView";
 import { LogView } from "./components/LogView";
+import { InfoView } from "./components/InfoView";
 
 type ModalState =
   | { type: "diff"; file: SrtFile }
+  | { type: "info"; file: SrtFile }
   | { type: "log" }
   | null;
 
@@ -160,6 +162,7 @@ function App() {
         pluginStates={pluginStates}
         onFiles={handleFiles}
         onShowDiff={(file) => setModal({ type: "diff", file })}
+        onShowInfo={(file) => setModal({ type: "info", file })}
       />
       <ActionButtons
         canRun={files.length > 0}
@@ -177,6 +180,11 @@ function App() {
       {modal?.type === "diff" && (
         <Modal title={`Diff \u2014 ${modal.file.name}`} onClose={closeModal}>
           <DiffView file={modal.file} />
+        </Modal>
+      )}
+      {modal?.type === "info" && (
+        <Modal title={`Info — ${modal.file.name}`} onClose={closeModal}>
+          <InfoView file={modal.file} hasRun={hasRun} />
         </Modal>
       )}
       {modal?.type === "log" && (

@@ -488,6 +488,49 @@
       color: #3a3a3c;
     }
 
+    /* ---- Info (modal content) ---- */
+    .info-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 16px;
+      align-items: baseline;
+    }
+
+    .info-grid-two {
+      grid-template-columns: auto 1fr 1fr;
+    }
+
+    .info-grid-header {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aeaeb2;
+      font-weight: 600;
+      padding-bottom: 4px;
+    }
+
+    .info-stat {
+      display: contents;
+    }
+
+    .info-stat-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6e6e73;
+      padding: 4px 0;
+    }
+
+    .info-stat-value {
+      font-size: 13px;
+      color: #1d1d1f;
+      padding: 4px 0;
+    }
+
+    .info-stat-line {
+      font-size: 11px;
+      color: #aeaeb2;
+    }
+
     /* ---- Responsive ---- */
     @media (max-width: 700px) {
       body { padding: 16px; }

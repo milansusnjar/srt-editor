@@ -21,13 +21,15 @@ src/
 │   ├── PluginCard.tsx        — Plugin toggle + params
 │   ├── Modal.tsx             — Generic modal (backdrop, header, close, body)
 │   ├── DiffView.tsx          — Side-by-side diff content
-│   └── LogView.tsx           — Processing log content
+│   ├── LogView.tsx           — Processing log content
+│   └── InfoView.tsx          — Subtitle stats modal (before/after)
 ├── hooks/
 │   └── usePluginState.ts     — Plugin state + localStorage persistence
 ├── utils/
-│   ├── icons.tsx             — SVG icon components (DownloadIcon, DiffIcon, LogIcon)
+│   ├── icons.tsx             — SVG icon components (DownloadIcon, DiffIcon, InfoIcon, LogIcon)
 │   ├── files.ts              — fileChanged(), getDownloadName(), downloadFile(), encodingLabel/Class
-│   └── diff.ts               — computeDiff() pure function
+│   ├── diff.ts               — computeDiff() pure function
+│   └── subInfo.ts            — computeSubInfo() subtitle statistics
 └── plugins/
     ├── index.ts              — Plugin registry, controls execution order
     ├── cps.ts                — CPS plugin (characters per second)

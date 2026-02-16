@@ -15,6 +15,16 @@ export function DiffIcon() {
   );
 }
 
+export function InfoIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <circle cx="8" cy="8" r="6.25" />
+      <line x1="8" y1="7" x2="8" y2="11.5" />
+      <circle cx="8" cy="4.75" r="0.01" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function LogIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
