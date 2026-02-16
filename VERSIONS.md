@@ -1,6 +1,6 @@
 # SRT Editor — Version Log
 
-## 2.0 — Extended Subtitle Info
+## 1.10 — Extended Subtitle Info
 - CPS distribution (count of subtitles exceeding each threshold: >15, >16, ..., >30)
 - Short duration buckets (count of subtitles < 1000ms, < 1500ms, < 2000ms)
 - Total subtitle count and total duration
