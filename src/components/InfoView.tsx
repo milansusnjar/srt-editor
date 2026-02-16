@@ -141,8 +141,6 @@ export function InfoView({ file, hasRun }: InfoViewProps) {
         />
 
         <div class="info-separator" />
-        {twoCol && <div class="info-separator" />}
-        {twoCol && <div class="info-separator" />}
 
         <StatRow label="Max CPS" original={origMaxCps} processed={procMaxCps} />
         <StatRow label="Max line length" original={origMaxLine} processed={procMaxLine} />
@@ -151,8 +149,6 @@ export function InfoView({ file, hasRun }: InfoViewProps) {
         <CountRow label="> 2 lines" original={origMoreThan2} processed={procMoreThan2} />
 
         <div class="info-separator" />
-        {twoCol && <div class="info-separator" />}
-        {twoCol && <div class="info-separator" />}
 
         {CPS_THRESHOLDS.map((t) => (
           <DistributionRow
@@ -164,8 +160,6 @@ export function InfoView({ file, hasRun }: InfoViewProps) {
         ))}
 
         <div class="info-separator" />
-        {twoCol && <div class="info-separator" />}
-        {twoCol && <div class="info-separator" />}
 
         {SHORT_DURATION_THRESHOLDS.map((t) => (
           <DistributionRow
