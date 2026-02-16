@@ -104,7 +104,11 @@ function App() {
           if (timingChanged || textChanged) changes++;
         }
 
-        if (changes > 0) {
+        const removed = before.length - subtitles.length;
+
+        if (removed > 0 && plugin.id === "removeAds") {
+          pluginSummaries.push(`Removed ${removed} ad subtitle${removed > 1 ? "s" : ""}`);
+        } else if (changes > 0) {
           if (plugin.id === "cyrillization") {
             pluginSummaries.push("Transliterated to Cyrillic");
           } else {

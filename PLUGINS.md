@@ -1,5 +1,20 @@
 # SRT Editor Plugins
 
+## Remove Ads
+
+**Purpose:** Removes known advertisement subtitles from the beginning and end of the file.
+
+**Parameters:** None (toggle only).
+
+**How it works:**
+1. If the last subtitle's text is `Preuzeto sa www.titlovi.com`, it is removed.
+2. If the first subtitle's text is `www.titlovi.com`, it is removed.
+3. Remaining subtitles are re-indexed sequentially.
+
+**Execution order:** Runs first, before all other plugins (cleanup step).
+
+---
+
 ## Cyrillization
 
 **Purpose:** Converts subtitle text from Serbian Latin script to Cyrillic script.
