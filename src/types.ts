@@ -25,7 +25,9 @@ export interface PluginConfig {
 export interface PluginParam {
   key: string;
   label: string;
+  type?: "number" | "text";
   defaultValue: number;
+  defaultText?: string;
   min?: number;
   step?: number;
   options?: { value: number; label: string }[];

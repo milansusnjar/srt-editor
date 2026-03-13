@@ -6,9 +6,10 @@ interface PluginListProps {
   pluginStates: Map<string, PluginStateEntry>;
   onToggle: (id: string) => void;
   onParamChange: (pluginId: string, key: string, value: number) => void;
+  onTextParamChange: (pluginId: string, key: string, value: string) => void;
 }
 
-export function PluginList({ pluginStates, onToggle, onParamChange }: PluginListProps) {
+export function PluginList({ pluginStates, onToggle, onParamChange, onTextParamChange }: PluginListProps) {
   return (
     <>
       <h3>Plugins</h3>
@@ -23,6 +24,7 @@ export function PluginList({ pluginStates, onToggle, onParamChange }: PluginList
               state={state}
               onToggle={onToggle}
               onParamChange={onParamChange}
+              onTextParamChange={onTextParamChange}
             />
           );
         })}

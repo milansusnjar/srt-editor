@@ -15,7 +15,7 @@ import { DiffView } from "./components/DiffView";
 import { LogView } from "./components/LogView";
 import { InfoView } from "./components/InfoView";
 
-const VERSION = "1.11";
+const VERSION = "1.12";
 
 type ModalState =
   | { type: "diff"; file: SrtFile }
@@ -28,7 +28,7 @@ function App() {
   const [hasRun, setHasRun] = useState(false);
   const [processingLogs, setProcessingLogs] = useState<FileProcessingLog[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
-  const { pluginStates, togglePlugin, setParam } = usePluginState();
+  const { pluginStates, togglePlugin, setParam, setTextParam } = usePluginState();
 
   const handleFiles = useCallback((fileList: FileList) => {
     const srtFiles = Array.from(fileList).filter((f) => f.name.endsWith(".srt"));
@@ -179,6 +179,7 @@ function App() {
         pluginStates={pluginStates}
         onToggle={togglePlugin}
         onParamChange={setParam}
+        onTextParamChange={setTextParam}
       />
       {modal?.type === "diff" && (
         <Modal title={`Diff \u2014 ${modal.file.name}`} onClose={closeModal}>

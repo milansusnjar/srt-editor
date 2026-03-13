@@ -12,10 +12,14 @@ export function encodingClass(enc: string): string {
   return "enc-" + enc.replace("windows-", "").replace(/[\s-]/g, "").toLowerCase();
 }
 
-export function getDownloadName(file: SrtFile, pluginStates: Map<string, { enabled: boolean; params: Record<string, number> }>): string {
+export function getDownloadName(file: SrtFile, pluginStates: Map<string, { enabled: boolean; params: Record<string, number>; textParams: Record<string, string> }>): string {
   let name = file.name;
-  if (pluginStates.get("cyrillization")?.enabled) {
-    name = name.replace(/\.srt$/i, ".cyr.sr.srt");
+  const extState = pluginStates.get("extension");
+  if (extState?.enabled) {
+    const ext = extState.textParams.ext?.trim();
+    if (ext) {
+      name = name.replace(/\.srt$/i, `.${ext}.srt`);
+    }
   }
   return name;
 }
@@ -32,7 +36,7 @@ export function fileChanged(file: SrtFile): boolean {
   return false;
 }
 
-export function downloadFile(file: SrtFile, pluginStates: Map<string, { enabled: boolean; params: Record<string, number> }>) {
+export function downloadFile(file: SrtFile, pluginStates: Map<string, { enabled: boolean; params: Record<string, number>; textParams: Record<string, string> }>) {
   const content = serializeSrt(file.subtitles);
   const bytes = encode(content, file.encoding);
   const blob = new Blob([bytes as unknown as ArrayBuffer], { type: "application/octet-stream" });

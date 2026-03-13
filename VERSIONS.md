@@ -1,5 +1,10 @@
 # SRT Editor — Version Log
 
+## 1.12 — Extension Plugin
+- Adds a custom string before .srt in download filenames (e.g. 'sr' → Movie.sr.srt)
+- Automatically enabled with 'cyr.sr' when Cyrillization is toggled on
+- Supports text parameters in the plugin system
+
 ## 1.11 — Min Duration Plugin
 - Extends short subtitles to a configurable minimum duration (default: 2000ms)
 - Respects Gap plugin constraints and next-subtitle boundaries

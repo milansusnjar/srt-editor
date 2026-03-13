@@ -32,7 +32,7 @@
    - Digraph exceptions at morpheme boundaries: `nj` is not merged to `њ` in words starting with `injekc`, `konjuk`, `konjug`, or `tanjug`; `dž` is not merged to `џ` in words starting with `nadž`.
    - Characters outside the Serbian Latin alphabet (digits, punctuation) are left unchanged.
 3. If the input file's encoding is `windows-1250`, it is automatically changed to `windows-1251` on output. UTF-8 files remain UTF-8.
-4. Downloaded files get `.cyr.sr` inserted before the `.srt` extension (e.g. `Movie.Name.srt` → `Movie.Name.cyr.sr.srt`).
+4. Toggling Cyrillization on automatically enables the Extension plugin with `cyr.sr`, so downloaded files get `.cyr.sr` inserted before the `.srt` extension (e.g. `Movie.Name.srt` → `Movie.Name.cyr.sr.srt`).
 
 **Execution order:** Cyrillization runs first (text transform), before CPS and Gap (timing adjustments).
 
@@ -143,4 +143,23 @@ CPS runs first (extends durations), then Min Duration (extends short subtitles),
 When Cyrillization is active, Windows-1250 is incompatible with Cyrillic characters. If the resulting encoding would be Windows-1250 (whether from "Keep original" on a 1250 file or explicitly selected), it is automatically overridden to Windows-1251. A note is added to the processing log.
 
 **Execution order:**
-Encoding runs last, after all content and timing transforms (Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding).
+Encoding runs after all content and timing transforms (Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding → Extension).
+
+---
+
+## Extension
+
+**Purpose:** Adds a custom string before `.srt` in the download filename. Useful for indicating the language or variant in the filename (e.g. `Movie.srt` → `Movie.sr.srt`).
+
+**Parameter:**
+- **Extension** (default: empty) — A text string inserted before `.srt` in the output filename. For example, entering `sr` produces `Movie.sr.srt`.
+
+**How it works:**
+1. When enabled with a non-empty extension value, the download filename is modified: `filename.srt` → `filename.<extension>.srt`.
+2. The extension does not affect subtitle content — it only changes the download filename.
+
+**Interaction with Cyrillization:**
+When Cyrillization is toggled on, the Extension plugin is automatically enabled with the value `cyr.sr`, so files download as `Movie.cyr.sr.srt`. The extension can be manually changed after auto-activation.
+
+**Execution order:**
+Extension runs last (filename-only transform, after Encoding).

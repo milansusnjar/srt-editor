@@ -6,9 +6,10 @@ interface PluginCardProps {
   state: PluginStateEntry;
   onToggle: (id: string) => void;
   onParamChange: (pluginId: string, key: string, value: number) => void;
+  onTextParamChange?: (pluginId: string, key: string, value: string) => void;
 }
 
-export function PluginCard({ plugin, state, onToggle, onParamChange }: PluginCardProps) {
+export function PluginCard({ plugin, state, onToggle, onParamChange, onTextParamChange }: PluginCardProps) {
   return (
     <div class="plugin-card">
       <label class="plugin-header">
@@ -28,7 +29,15 @@ export function PluginCard({ plugin, state, onToggle, onParamChange }: PluginCar
           <div key={param.key} class="param-row">
             <label>
               {param.label}:{" "}
-              {param.options ? (
+              {param.type === "text" ? (
+                <input
+                  type="text"
+                  value={state.textParams[param.key] ?? ""}
+                  onChange={(e) =>
+                    onTextParamChange?.(plugin.id, param.key, (e.target as HTMLInputElement).value)
+                  }
+                />
+              ) : param.options ? (
                 <select
                   value={state.params[param.key]}
                   onChange={(e) =>

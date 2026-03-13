@@ -6,7 +6,8 @@ import { cpsPlugin } from "./cps";
 import { minDurationPlugin } from "./minDuration";
 import { gapPlugin } from "./gap";
 import { encodingPlugin } from "./encoding";
+import { extensionPlugin } from "./extension";
 
 // Plugin execution order: cleanup first, then text transforms, timing adjustments, output format.
-// Remove Ads → Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding
-export const allPlugins: PluginConfig[] = [removeAdsPlugin, cyrillizationPlugin, longLinesPlugin, cpsPlugin, minDurationPlugin, gapPlugin, encodingPlugin];
+// Remove Ads → Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding → Extension
+export const allPlugins: PluginConfig[] = [removeAdsPlugin, cyrillizationPlugin, longLinesPlugin, cpsPlugin, minDurationPlugin, gapPlugin, encodingPlugin, extensionPlugin];
