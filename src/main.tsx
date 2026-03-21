@@ -166,6 +166,7 @@ function App() {
         onFiles={handleFiles}
         onShowDiff={(file) => setModal({ type: "diff", file })}
         onShowInfo={(file) => setModal({ type: "info", file })}
+        onRemoveFile={(file) => setFiles((prev) => prev.filter((f) => f !== file))}
       />
       <ActionButtons
         canRun={files.length > 0}

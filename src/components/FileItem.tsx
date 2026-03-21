@@ -1,6 +1,7 @@
+import { useRef } from "preact/hooks";
 import { SrtFile } from "../types";
 import { encodingLabel, encodingClass, fileChanged, getDownloadName, downloadFile } from "../utils/files";
-import { DownloadIcon, DiffIcon, InfoIcon } from "../utils/icons";
+import { CloseIcon, DownloadIcon, DiffIcon, InfoIcon } from "../utils/icons";
 import { PluginStateEntry } from "../hooks/usePluginState";
 
 interface FileItemProps {
@@ -9,16 +10,45 @@ interface FileItemProps {
   pluginStates: Map<string, PluginStateEntry>;
   onShowDiff: (file: SrtFile) => void;
   onShowInfo: (file: SrtFile) => void;
+  onRemove: (file: SrtFile) => void;
 }
 
-export function FileItem({ file, hasRun, pluginStates, onShowDiff, onShowInfo }: FileItemProps) {
+export function FileItem({ file, hasRun, pluginStates, onShowDiff, onShowInfo, onRemove }: FileItemProps) {
   const changed = hasRun && fileChanged(file);
   const unchanged = hasRun && !changed;
   const displayName = hasRun ? getDownloadName(file, pluginStates) : file.name;
   const enc = hasRun ? file.encoding : file.originalEncoding;
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  const handleRemove = (e: MouseEvent) => {
+    e.stopPropagation();
+    const el = rowRef.current;
+    if (el) {
+      // Phase 1: fade out + slide
+      el.classList.add("removing");
+      el.addEventListener("transitionend", (ev) => {
+        if (ev.propertyName !== "opacity") return;
+        // Phase 2: collapse height
+        el.style.height = el.offsetHeight + "px";
+        requestAnimationFrame(() => {
+          el.classList.add("collapsing");
+          el.addEventListener("transitionend", () => onRemove(file), { once: true });
+        });
+      }, { once: true });
+    } else {
+      onRemove(file);
+    }
+  };
 
   return (
-    <div class={`file-item${unchanged ? " unchanged" : ""}`}>
+    <div ref={rowRef} class={`file-item${unchanged ? " unchanged" : ""}`}>
+      <button
+        class="file-action-btn"
+        title="Remove file"
+        onClick={handleRemove}
+      >
+        <CloseIcon />
+      </button>
       <span class="file-name" title={displayName}>{displayName}</span>
       {unchanged ? (
         <span class="not-changed-label">Not changed</span>

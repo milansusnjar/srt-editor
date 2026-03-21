@@ -25,7 +25,7 @@ export const dialogDashPlugin: PluginConfig = {
   name: "Dialog Dash",
   description:
     "Removes the dash and space from the first speaker's line. For other speakers, removes only the space after the dash.",
-  enabled: false,
+  enabled: true,
   params: [],
   run(subtitles: Subtitle[]): Subtitle[] {
     return subtitles.map((sub) => {
