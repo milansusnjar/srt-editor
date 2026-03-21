@@ -15,6 +15,45 @@
 
 ---
 
+## Dialog Dash
+
+**Purpose:** Removes the dialog dash from the first speaker's line and removes the space after dashes on subsequent speaker lines. In subtitle dialog convention, the first speaker doesn't need a dash — only speaker changes are marked with dashes.
+
+**Parameters:** None (toggle only).
+
+**How it works:**
+1. Only affects multi-line subtitles (2+ lines) where at least two lines start with `- ` (after optional tags).
+2. **First line:** The `- ` (dash + space) is removed entirely (after any leading tags like `{\an8}`, `{i}`, `<b>`, etc.).
+3. **Other lines:** The space after the dash is removed (`- Text` → `-Text`), keeping the dash itself.
+4. Lines that don't start with a dash are left unchanged.
+5. Dashes in the middle of a line (e.g. `Text -more`) are not affected.
+
+**Example:**
+```
+- Laku noć, cure.
+- Vidimo se ujutro, drugarice.
+```
+becomes:
+```
+Laku noć, cure.
+-Vidimo se ujutro, drugarice.
+```
+
+With tags:
+```
+{\an8}- Gdje si dosad?
+- Dobra večer.
+```
+becomes:
+```
+{\an8}Gdje si dosad?
+-Dobra večer.
+```
+
+**Execution order:** Runs after Remove Ads and before Cyrillization (improves original subtitle before any transforms).
+
+---
+
 ## Cyrillization
 
 **Purpose:** Converts subtitle text from Serbian Latin script to Cyrillic script.
@@ -34,7 +73,7 @@
 3. If the input file's encoding is `windows-1250`, it is automatically changed to `windows-1251` on output. UTF-8 files remain UTF-8.
 4. Toggling Cyrillization on automatically enables the Extension plugin with `cyr.sr`, so downloaded files get `.cyr.sr` inserted before the `.srt` extension (e.g. `Movie.Name.srt` → `Movie.Name.cyr.sr.srt`).
 
-**Execution order:** Cyrillization runs first (text transform), before CPS and Gap (timing adjustments).
+**Execution order:** Cyrillization runs after Dialog Dash, before Long Lines, CPS, and Gap.
 
 ---
 
@@ -52,7 +91,7 @@
    - If the merged text fits within the max length, keep it as one line.
    - Otherwise, split into two lines at the word boundary closest to the midpoint, producing approximately equal-length lines.
 
-**Execution order:** Runs after Cyrillization and before CPS/Gap.
+**Execution order:** Runs after Cyrillization and before CPS/Gap. Dialog Dash runs before Long Lines, so dash removal may shorten lines enough to avoid splitting.
 
 ---
 
@@ -143,7 +182,7 @@ CPS runs first (extends durations), then Min Duration (extends short subtitles),
 When Cyrillization is active, Windows-1250 is incompatible with Cyrillic characters. If the resulting encoding would be Windows-1250 (whether from "Keep original" on a 1250 file or explicitly selected), it is automatically overridden to Windows-1251. A note is added to the processing log.
 
 **Execution order:**
-Encoding runs after all content and timing transforms (Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding → Extension).
+Encoding runs after all content and timing transforms (Dialog Dash → Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding → Extension).
 
 ---
 

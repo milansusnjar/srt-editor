@@ -32,6 +32,7 @@ src/
 │   └── subInfo.ts            — computeSubInfo() subtitle statistics
 └── plugins/
     ├── index.ts              — Plugin registry, controls execution order
+    ├── dialogDash.ts         — Dialog Dash plugin (remove first dash)
     ├── cps.ts                — CPS plugin (characters per second)
     ├── minDuration.ts        — Min Duration plugin (minimum subtitle duration)
     ├── gap.ts                — Gap plugin (minimum gap between subtitles)

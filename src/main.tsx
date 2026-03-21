@@ -15,7 +15,7 @@ import { DiffView } from "./components/DiffView";
 import { LogView } from "./components/LogView";
 import { InfoView } from "./components/InfoView";
 
-const VERSION = "1.12";
+const VERSION = "1.13";
 
 type ModalState =
   | { type: "diff"; file: SrtFile }
