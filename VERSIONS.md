@@ -1,10 +1,9 @@
 # SRT Editor — Version Log
 
 ## 1.13 — Dialog Dash Plugin
-- Removes dash and space from the first speaker's line in dialog subtitles
-- Removes space after dash on subsequent speaker lines (keeps the dash)
-- Handles leading tags (e.g. `{\an8}`) — processes the dash after tags
-- Only affects multi-line subtitles where lines start with dashes
+- Removes dialog dashes: first speaker loses dash entirely, others keep dash but lose the space
+- Handles single-line and multi-line dialog, including two speakers in one line
+- Preserves regular dashes (e.g. `me - just thinking`)
 
 ## 1.12 — Extension Plugin
 - Adds a custom string before .srt in download filenames (e.g. 'sr' → Movie.sr.srt)

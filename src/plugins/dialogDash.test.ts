@@ -38,9 +38,19 @@ describe("Dialog Dash plugin", () => {
     expect(result[0].lines).toEqual(["<i>Hello.", "-World.</i>"]);
   });
 
-  it("ignores single-line subtitles", () => {
-    const result = run([sub(["- Just one line."])]);
-    expect(result[0].lines).toEqual(["- Just one line."]);
+  it("removes dash from single-line subtitle", () => {
+    const result = run([sub(["- Hvala vam"])]);
+    expect(result[0].lines).toEqual(["Hvala vam"]);
+  });
+
+  it("handles two speakers in one line", () => {
+    const result = run([sub(["- Hvala vam. - Nema na čemu!"])]);
+    expect(result[0].lines).toEqual(["Hvala vam. -Nema na čemu!"]);
+  });
+
+  it("preserves regular dash after lowercase letter", () => {
+    const result = run([sub(["- This is me - just thinking about you."])]);
+    expect(result[0].lines).toEqual(["This is me - just thinking about you."]);
   });
 
   it("ignores subtitles without dashes", () => {
@@ -56,9 +66,9 @@ describe("Dialog Dash plugin", () => {
     ]);
   });
 
-  it("ignores subtitles where only first line has a dash", () => {
+  it("removes dash from first line even if second line has no dash", () => {
     const result = run([sub(["- First line.", "No dash here."])]);
-    expect(result[0].lines).toEqual(["- First line.", "No dash here."]);
+    expect(result[0].lines).toEqual(["First line.", "No dash here."]);
   });
 
   it("handles three-line dialog", () => {

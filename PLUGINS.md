@@ -17,40 +17,29 @@
 
 ## Dialog Dash
 
-**Purpose:** Removes the dialog dash from the first speaker's line and removes the space after dashes on subsequent speaker lines. In subtitle dialog convention, the first speaker doesn't need a dash — only speaker changes are marked with dashes.
+**Purpose:** Cleans up dialog dashes. The first speaker doesn't need a dash — only speaker changes are marked.
 
 **Parameters:** None (toggle only).
 
-**How it works:**
-1. Only affects multi-line subtitles (2+ lines) where at least two lines start with `- ` (after optional tags).
-2. **First line:** The `- ` (dash + space) is removed entirely (after any leading tags like `{\an8}`, `{i}`, `<b>`, etc.).
-3. **Other lines:** The space after the dash is removed (`- Text` → `-Text`), keeping the dash itself.
-4. Lines that don't start with a dash are left unchanged.
-5. Dashes in the middle of a line (e.g. `Text -more`) are not affected.
+**Rules:**
+1. First speaker: remove `- ` (dash + space) entirely.
+2. Other speakers: remove space after dash (`- Text` → `-Text`).
+3. Tags before the dash (`{\an8}`, `{i}`, `<b>`, etc.) are preserved.
+4. Regular dashes (preceded by a lowercase letter, e.g. `me - just thinking`) are left unchanged.
+5. Works on single-line, multi-line, and two-speakers-in-one-line subtitles.
 
 **Example:**
 ```
-- Laku noć, cure.
-- Vidimo se ujutro, drugarice.
+- Hajde.
+- Spreman?
 ```
 becomes:
 ```
-Laku noć, cure.
--Vidimo se ujutro, drugarice.
+Hajde.
+-Spreman?
 ```
 
-With tags:
-```
-{\an8}- Gdje si dosad?
-- Dobra večer.
-```
-becomes:
-```
-{\an8}Gdje si dosad?
--Dobra večer.
-```
-
-**Execution order:** Runs after Remove Ads and before Cyrillization (improves original subtitle before any transforms).
+**Execution order:** Runs after Remove Ads and before Cyrillization.
 
 ---
 
