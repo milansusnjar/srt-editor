@@ -17,7 +17,7 @@ export function getDownloadName(file: SrtFile, pluginStates: Map<string, { enabl
   const extState = pluginStates.get("extension");
   if (extState?.enabled) {
     const ext = extState.textParams.ext?.trim();
-    if (ext) {
+    if (ext && !name.toLowerCase().endsWith(`.${ext.toLowerCase()}.srt`)) {
       name = name.replace(/\.srt$/i, `.${ext}.srt`);
     }
   }
