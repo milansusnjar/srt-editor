@@ -109,6 +109,26 @@ describe("Dialog Dash plugin", () => {
     ]);
   });
 
+  it("removes space from second line when first line has no dash", () => {
+    const result = run([sub(["Hajdemo onda jesti.", "- A gde?"])]);
+    expect(result[0].lines).toEqual(["Hajdemo onda jesti.", "-A gde?"]);
+  });
+
+  it("handles first speaker without dash and second speaker with dash — real-world", () => {
+    const result = run([
+      sub(["Volim ''Murjake'', tv-seriju. Vi ne gledate?", "- Nikad ne propuštam."]),
+      sub(["A ja mislila da je to jedinstveno.", "- Ne, on odlučuje po vlastitom nahođenju."]),
+    ]);
+    expect(result[0].lines).toEqual([
+      "Volim ''Murjake'', tv-seriju. Vi ne gledate?",
+      "-Nikad ne propuštam.",
+    ]);
+    expect(result[1].lines).toEqual([
+      "A ja mislila da je to jedinstveno.",
+      "-Ne, on odlučuje po vlastitom nahođenju.",
+    ]);
+  });
+
   it("does not modify subtitles that are not dialog", () => {
     const input = [
       sub(["Regular subtitle."]),

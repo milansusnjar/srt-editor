@@ -29,9 +29,8 @@ export const dialogDashPlugin: PluginConfig = {
   params: [],
   run(subtitles: Subtitle[]): Subtitle[] {
     return subtitles.map((sub) => {
-      // Check if first line starts with "- " (after optional tags)
-      const firstParsed = parseDialogLine(sub.lines[0]);
-      if (!firstParsed) return sub;
+      // Only process if at least one line starts with "- "
+      if (!sub.lines.some((line) => parseDialogLine(line) !== null)) return sub;
 
       const newLines = sub.lines.map((line, i) => {
         const parsed = parseDialogLine(line);
