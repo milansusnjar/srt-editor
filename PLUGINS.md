@@ -56,6 +56,7 @@ Hajde.
    - Single characters: `a` → `а`, `b` → `б`, `š` → `ш`, etc.
    - Words containing `w`, `q`, or `y` (foreign words) are left entirely in Latin.
    - A blocklist of common foreign words (e.g. `live`, `discord`, `fresh`, `visa`, `co2`, `h2o`, etc.) is matched case-insensitively and left in Latin.
+   - The phrase *rock and roll* is left in Latin in all common spellings: `rock-and-roll`, `rock and roll`, `rock'n'roll` (and spaced `rock 'n' roll`), case-insensitive.
    - Uppercase Roman numerals with 2+ characters (e.g. `IV`, `VII`, `XII`, `MCMXCIX`) are detected and left in Latin. Single `I` is always cyrillized (treated as the Serbian conjunction "и").
    - Digraph exceptions at morpheme boundaries: `nj` is not merged to `њ` in words starting with `injekc`, `konjuk`, `konjug`, or `tanjug`; `dž` is not merged to `џ` in words starting with `nadž`.
    - Characters outside the Serbian Latin alphabet (digits, punctuation) are left unchanged.

@@ -53,6 +53,17 @@ describe("Cyrillization plugin", () => {
     expect(run(["{b}Zdravo{/b}"])).toEqual(["{b}Здраво{/b}"]);
   });
 
+  it("preserves rock-and-roll phrase variants in Latin", () => {
+    expect(run(["rock-and-roll"])).toEqual(["rock-and-roll"]);
+    expect(run(["rock and roll"])).toEqual(["rock and roll"]);
+    expect(run(["rock'n'roll"])).toEqual(["rock'n'roll"]);
+    expect(run(["Rock-and-Roll"])).toEqual(["Rock-and-Roll"]);
+    expect(run(['"rock-and-roll"'])).toEqual(['"rock-and-roll"']);
+    expect(run(["Volimo rock-and-roll muziku"])).toEqual([
+      "Волимо rock-and-roll музику",
+    ]);
+  });
+
   it("preserves foreign words from the blocklist", () => {
     expect(run(["live"])).toEqual(["live"]);
     expect(run(["Discord"])).toEqual(["Discord"]);

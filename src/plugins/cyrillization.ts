@@ -88,9 +88,25 @@ function cyrillizeWord(word: string): string {
   return cyrillize(word);
 }
 
+/** rock-and-roll, rock and roll, rock'n'roll (case-insensitive) */
+const rockAndRollRe =
+  /\brock(?:(?:[-\s]+and[-\s]+)|(?:'\s*n\s*'))roll\b/gi;
+
+const wordSegmentRe =
+  /[a-zA-Z0-9\u010c\u010d\u0106\u0107\u0110\u0111\u0160\u0161\u017d\u017e]+/gi;
+
+const textSegmentRe = new RegExp(
+  `${rockAndRollRe.source}|${wordSegmentRe.source}`,
+  "gi",
+);
+
+function isRockAndRollPhrase(segment: string): boolean {
+  return /^rock(?:(?:[-\s]+and[-\s]+)|(?:'\s*n\s*'))roll$/i.test(segment);
+}
+
 function cyrillizeText(text: string): string {
-  // Match runs of letters/digits (including Serbian diacritics) as words
-  return text.replace(/[a-zA-Z0-9\u010c\u010d\u0106\u0107\u0110\u0111\u0160\u0161\u017d\u017e]+/g, (word) => {
+  return text.replace(textSegmentRe, (word) => {
+    if (isRockAndRollPhrase(word)) return word;
     if (/[wqyWQY]/.test(word)) return word;
     if (foreignWords.has(word.toLowerCase())) return word;
     if (isRomanNumeral(word)) return word;
