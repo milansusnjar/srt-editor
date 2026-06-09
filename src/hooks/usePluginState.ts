@@ -9,7 +9,7 @@ export interface PluginStateEntry {
   textParams: Record<string, string>;
 }
 
-function buildDefaults(): Map<string, PluginStateEntry> {
+export function buildDefaults(): Map<string, PluginStateEntry> {
   const map = new Map<string, PluginStateEntry>();
   for (const plugin of allPlugins) {
     const params: Record<string, number> = {};
@@ -111,5 +111,24 @@ export function usePluginState() {
     });
   }, []);
 
-  return { pluginStates, togglePlugin, setParam, setTextParam };
+  // Replace the entire plugin state, e.g. when applying a preset. Values are
+  // merged over the defaults so plugins missing from `states` fall back to
+  // their defaults (keeps old presets working when new plugins are added).
+  const setAllStates = useCallback((states: Record<string, PluginStateEntry>) => {
+    setPluginStates(() => {
+      const next = buildDefaults();
+      for (const [id, saved] of Object.entries(states)) {
+        const entry = next.get(id);
+        if (!entry) continue;
+        next.set(id, {
+          enabled: saved.enabled,
+          params: { ...entry.params, ...saved.params },
+          textParams: { ...entry.textParams, ...saved.textParams },
+        });
+      }
+      return next;
+    });
+  }, []);
+
+  return { pluginStates, togglePlugin, setParam, setTextParam, setAllStates };
 }

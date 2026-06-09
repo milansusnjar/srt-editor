@@ -17,6 +17,7 @@ src/
 │   ├── DropZone.tsx          — File drop/upload area with file list
 │   ├── FileItem.tsx          — Single file row (encoding tag, diff/download buttons)
 │   ├── ActionButtons.tsx     — Run, Show Log, Download All
+│   ├── PresetBar.tsx         — Preset selector (apply / save / delete)
 │   ├── PluginList.tsx        — Plugin grid container
 │   ├── PluginCard.tsx        — Plugin toggle + params
 │   ├── Modal.tsx             — Generic modal (backdrop, header, close, body)
@@ -24,7 +25,8 @@ src/
 │   ├── LogView.tsx           — Processing log content
 │   └── InfoView.tsx          — Subtitle stats modal (before/after)
 ├── hooks/
-│   └── usePluginState.ts     — Plugin state + localStorage persistence
+│   ├── usePluginState.ts     — Plugin state + localStorage persistence (+ setAllStates for presets)
+│   └── usePresets.ts         — Presets (built-ins + user) CRUD + localStorage persistence
 ├── utils/
 │   ├── icons.tsx             — SVG icon components (DownloadIcon, DiffIcon, InfoIcon, LogIcon)
 │   ├── files.ts              — fileChanged(), getDownloadName(), downloadFile(), encodingLabel/Class
@@ -47,6 +49,12 @@ src/
 - Global constants shared across plugins or the app go in `src/constants.ts`.
 - Plugins are registered in `src/plugins/index.ts` — order matters (they run top to bottom).
 - Each plugin receives `activePlugins` set and `allConfigs` map so it can be aware of other plugins' state and parameters.
+
+### Presets
+- A **preset** is a named snapshot of the full plugin config (each plugin's `enabled` + `params` + `textParams`). See `src/hooks/usePresets.ts`.
+- **Built-in presets** are defined in code (`BUILTIN_PRESETS`) and are read-only (cannot be deleted/overwritten). User presets are persisted in localStorage (`srt-editor:presets`); the last selection is stored in `srt-editor:activePresetId`.
+- Applying a preset calls `setAllStates` (in `usePluginState`), which merges the preset over `buildDefaults()` so any plugin missing from a preset falls back to its default — old presets keep working when new plugins are added.
+- Manually toggling a plugin or editing a param clears the active preset to "Custom".
 
 ### SRT Parsing
 - Subtitles can have multi-line text (1, 2, or more lines).

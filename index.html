@@ -226,6 +226,32 @@
       height: 15px;
     }
 
+    /* ---- Presets ---- */
+    .presets-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .preset-select {
+      flex: 1;
+      min-width: 180px;
+      max-width: 320px;
+      padding: 10px 12px;
+      border: 1px solid #d1d1d6;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #1d1d1f;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .presets-row button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
     /* ---- Plugins grid ---- */
     #plugins {
       display: grid;
