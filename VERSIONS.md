@@ -1,5 +1,11 @@
 # SRT Editor — Version Log
 
+## 1.14 — Presets
+- Save the current plugin configuration (enabled plugins + params) as a named preset
+- Presets and the last selection persist in localStorage; selecting one applies it
+- Built-in presets: Cyrillize (Cyrillization + Extension `cyr.sr` + Encoding UTF-8), Clean Ads, Fix Timing, Full Polish
+- Manually editing any plugin clears the active preset to "Custom"
+
 ## 1.13 — Dialog Dash Plugin
 - Removes dialog dashes: first speaker loses dash entirely, others keep dash but lose the space
 - Handles single-line and multi-line dialog, including two speakers in one line

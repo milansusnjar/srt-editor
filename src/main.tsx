@@ -5,17 +5,19 @@ import { parseSrt } from "./srt";
 import { allPlugins } from "./plugins";
 import { ENCODING_MAP } from "./plugins/encoding";
 import { detectEncoding, decode } from "./encoding";
-import { usePluginState } from "./hooks/usePluginState";
+import { usePluginState, PluginStateEntry } from "./hooks/usePluginState";
+import { usePresets } from "./hooks/usePresets";
 import { fileChanged, downloadFile } from "./utils/files";
 import { DropZone } from "./components/DropZone";
 import { ActionButtons } from "./components/ActionButtons";
+import { PresetBar } from "./components/PresetBar";
 import { PluginList } from "./components/PluginList";
 import { Modal } from "./components/Modal";
 import { DiffView } from "./components/DiffView";
 import { LogView } from "./components/LogView";
 import { InfoView } from "./components/InfoView";
 
-const VERSION = "1.13";
+const VERSION = "1.14";
 
 type ModalState =
   | { type: "diff"; file: SrtFile }
@@ -28,7 +30,48 @@ function App() {
   const [hasRun, setHasRun] = useState(false);
   const [processingLogs, setProcessingLogs] = useState<FileProcessingLog[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
-  const { pluginStates, togglePlugin, setParam, setTextParam } = usePluginState();
+  const { pluginStates, togglePlugin, setParam, setTextParam, setAllStates } = usePluginState();
+  const { presets, activePresetId, setActivePresetId, findPreset, savePreset, deletePreset } = usePresets();
+
+  // Applying a preset replaces all plugin state and marks it active.
+  const applyPreset = useCallback((id: string) => {
+    const preset = findPreset(id);
+    if (!preset) return;
+    setAllStates(preset.states);
+    setActivePresetId(id);
+  }, [findPreset, setAllStates, setActivePresetId]);
+
+  // Capture the current plugin config as a named user preset.
+  const handleSavePreset = useCallback(() => {
+    const name = window.prompt("Preset name:");
+    if (!name || !name.trim()) return;
+    const states: Record<string, PluginStateEntry> = {};
+    for (const [pid, state] of pluginStates) {
+      states[pid] = {
+        enabled: state.enabled,
+        params: { ...state.params },
+        textParams: { ...state.textParams },
+      };
+    }
+    const id = savePreset(name, states);
+    setActivePresetId(id);
+  }, [pluginStates, savePreset, setActivePresetId]);
+
+  // Manually editing a plugin means the config no longer matches a preset.
+  const handleToggle = useCallback((id: string) => {
+    setActivePresetId(null);
+    togglePlugin(id);
+  }, [togglePlugin, setActivePresetId]);
+
+  const handleParamChange = useCallback((pid: string, key: string, value: number) => {
+    setActivePresetId(null);
+    setParam(pid, key, value);
+  }, [setParam, setActivePresetId]);
+
+  const handleTextParamChange = useCallback((pid: string, key: string, value: string) => {
+    setActivePresetId(null);
+    setTextParam(pid, key, value);
+  }, [setTextParam, setActivePresetId]);
 
   const handleFiles = useCallback((fileList: FileList) => {
     const srtFiles = Array.from(fileList).filter((f) => f.name.endsWith(".srt"));
@@ -176,11 +219,18 @@ function App() {
         onShowLog={() => setModal({ type: "log" })}
         onDownloadAll={downloadAll}
       />
+      <PresetBar
+        presets={presets}
+        activePresetId={activePresetId}
+        onApply={applyPreset}
+        onSave={handleSavePreset}
+        onDelete={deletePreset}
+      />
       <PluginList
         pluginStates={pluginStates}
-        onToggle={togglePlugin}
-        onParamChange={setParam}
-        onTextParamChange={setTextParam}
+        onToggle={handleToggle}
+        onParamChange={handleParamChange}
+        onTextParamChange={handleTextParamChange}
       />
       {modal?.type === "diff" && (
         <Modal title={`Diff \u2014 ${modal.file.name}`} onClose={closeModal}>

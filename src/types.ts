@@ -33,6 +33,19 @@ export interface PluginParam {
   options?: { value: number; label: string }[];
 }
 
+export interface PresetPluginState {
+  enabled: boolean;
+  params: Record<string, number>;
+  textParams: Record<string, string>;
+}
+
+export interface Preset {
+  id: string;
+  name: string;
+  builtin?: boolean;
+  states: Record<string, PresetPluginState>;
+}
+
 export interface FileProcessingLog {
   fileName: string;
   summaries: string[];
