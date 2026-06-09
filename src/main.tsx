@@ -223,6 +223,7 @@ function App() {
         presets={presets}
         activePresetId={activePresetId}
         onApply={applyPreset}
+        onClear={() => setActivePresetId(null)}
         onSave={handleSavePreset}
         onDelete={deletePreset}
       />

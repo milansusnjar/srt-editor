@@ -4,11 +4,12 @@ interface PresetBarProps {
   presets: Preset[];
   activePresetId: string | null;
   onApply: (id: string) => void;
+  onClear: () => void;
   onSave: () => void;
   onDelete: (id: string) => void;
 }
 
-export function PresetBar({ presets, activePresetId, onApply, onSave, onDelete }: PresetBarProps) {
+export function PresetBar({ presets, activePresetId, onApply, onClear, onSave, onDelete }: PresetBarProps) {
   const builtins = presets.filter((p) => p.builtin);
   const userPresets = presets.filter((p) => !p.builtin);
   const active = presets.find((p) => p.id === activePresetId);
@@ -24,6 +25,7 @@ export function PresetBar({ presets, activePresetId, onApply, onSave, onDelete }
           onChange={(e) => {
             const id = (e.target as HTMLSelectElement).value;
             if (id) onApply(id);
+            else onClear();
           }}
         >
           <option value="">Custom</option>
