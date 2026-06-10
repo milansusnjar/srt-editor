@@ -121,6 +121,52 @@ describe("Cyrillization plugin", () => {
     expect(run(["Konjugacija"])).toEqual(["Конјугација"]);
   });
 
+  it("treats words containing x as foreign", () => {
+    expect(run(["taxi"])).toEqual(["taxi"]);
+    expect(run(["Max je tu"])).toEqual(["Max је ту"]);
+  });
+
+  it("treats words with non-Serbian accented letters as foreign", () => {
+    expect(run(["café"])).toEqual(["café"]);
+    expect(run(["Idemo u café"])).toEqual(["Идемо у café"]);
+  });
+
+  it("does not merge nj digraph in words starting with konjunk", () => {
+    expect(run(["konjunktura"])).toEqual(["конјунктура"]);
+    expect(run(["konjunkcija"])).toEqual(["конјункција"]);
+  });
+
+  it("does not merge dž digraph in words starting with podž", () => {
+    expect(run(["podžanr"])).toEqual(["поджанр"]);
+  });
+
+  it("preserves URLs and emails", () => {
+    expect(run(["imdb.com"])).toEqual(["imdb.com"]);
+    expect(run(["Poseti www.titlovi.com odmah"])).toEqual([
+      "Посети www.titlovi.com одмах",
+    ]);
+    expect(run(["kontakt@mail.com"])).toEqual(["kontakt@mail.com"]);
+  });
+
+  it("still converts sentence boundaries that look like URLs", () => {
+    expect(run(["kraj.Ali ne"])).toEqual(["крај.Али не"]);
+  });
+
+  it("keeps foreign hyphenated compounds fully in Latin", () => {
+    expect(run(["Wi-Fi mreža"])).toEqual(["Wi-Fi мрежа"]);
+  });
+
+  it("cyrillizes case-ending suffixes after foreign acronyms", () => {
+    expect(run(["Radio je u KWF-u."])).toEqual(["Радио је у KWF-у."]);
+    expect(run(["Gledamo Sky-jevu seriju"])).toEqual(["Гледамо Sky-јеву серију"]);
+    expect(run(["WWF-ova akcija"])).toEqual(["WWF-ова акција"]);
+  });
+
+  it("cyrillizes fully Serbian hyphenated compounds", () => {
+    expect(run(["SAD-u"])).toEqual(["САД-у"]);
+    expect(run(["crno-beli"])).toEqual(["црно-бели"]);
+  });
+
   it("is idempotent — running on already-cyrillized text produces no changes", () => {
     const first = run(["Zdravo svete"]);
     expect(first).toEqual(["Здраво свете"]);
