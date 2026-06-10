@@ -54,11 +54,13 @@ Hajde.
 2. Content tokens are converted left-to-right, matching digraphs before single characters:
    - Digraphs: `lj` → `љ`, `nj` → `њ`, `dž` → `џ` (and their capitalized/uppercase variants)
    - Single characters: `a` → `а`, `b` → `б`, `š` → `ш`, etc.
-   - Words containing `w`, `q`, or `y` (foreign words) are left entirely in Latin.
+   - Words containing any letter outside the Serbian Latin alphabet (`w`, `q`, `x`, `y`, accented letters like `é`, `ü`, etc.) are foreign words and left entirely in Latin (e.g. `taxi`, `café`, `YouTube`).
    - A blocklist of common foreign words (e.g. `live`, `discord`, `fresh`, `visa`, `co2`, `h2o`, etc.) is matched case-insensitively and left in Latin.
+   - URLs and email addresses (e.g. `imdb.com`, `www.titlovi.com`, `kontakt@mail.com`) are left in Latin.
+   - Hyphenated compounds containing a foreign part are left in Latin (e.g. `Wi-Fi`), except that a Serbian case-ending suffix after the hyphen is still cyrillized (e.g. `KWF-u` → `KWF-у`, `Sky-jevu` → `Sky-јеву`). Fully Serbian compounds convert normally (`SAD-u` → `САД-у`).
    - The phrase *rock and roll* is left in Latin in all common spellings: `rock-and-roll`, `rock and roll`, `rock'n'roll` (and spaced `rock 'n' roll`), case-insensitive.
    - Uppercase Roman numerals with 2+ characters (e.g. `IV`, `VII`, `XII`, `MCMXCIX`) are detected and left in Latin. Single `I` is always cyrillized (treated as the Serbian conjunction "и").
-   - Digraph exceptions at morpheme boundaries: `nj` is not merged to `њ` in words starting with `injekc`, `konjuk`, `konjug`, or `tanjug`; `dž` is not merged to `џ` in words starting with `nadž`.
+   - Digraph exceptions at morpheme boundaries: `nj` is not merged to `њ` in words starting with `injekc`, `konjuk`, `konjug`, `konjunk`, or `tanjug`; `dž` is not merged to `џ` in words starting with `nadž` or `podž`.
    - Characters outside the Serbian Latin alphabet (digits, punctuation) are left unchanged.
 3. If the input file's encoding is `windows-1250`, it is automatically changed to `windows-1251` on output. UTF-8 files remain UTF-8.
 4. Toggling Cyrillization on automatically enables the Extension plugin with `cyr.sr`, so downloaded files get `.cyr.sr` inserted before the `.srt` extension (e.g. `Movie.Name.srt` → `Movie.Name.cyr.sr.srt`).

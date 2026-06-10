@@ -72,9 +72,11 @@ function isRomanNumeral(word: string): boolean {
  */
 const digraphSplitPrefixes: [string, number][] = [
   ["nadž", 3],    // nad + živeti  (dž spans boundary)
+  ["podž", 3],    // pod + žanr    (dž spans boundary)
   ["injekc", 2],  // in + jekcija  (nj spans boundary)
   ["konjuk", 3],  // kon + juktura (nj spans boundary)
   ["konjug", 3],  // kon + jugacija(nj spans boundary)
+  ["konjunk", 3], // kon + junktura(nj spans boundary)
   ["tanjug", 3],  // tan + jug     (nj spans boundary)
 ];
 
@@ -92,25 +94,76 @@ function cyrillizeWord(word: string): string {
 const rockAndRollRe =
   /\brock(?:(?:[-\s]+and[-\s]+)|(?:'\s*n\s*'))roll\b/gi;
 
-const wordSegmentRe =
-  /[a-zA-Z0-9\u010c\u010d\u0106\u0107\u0110\u0111\u0160\u0161\u017d\u017e]+/gi;
+/** Letters/digits that can appear in a word segment (incl. accented Latin) */
+const wordSegmentRe = /[a-zA-Z0-9\u00c0-\u024f]+/gi;
+
+/** URL or email-like tokens (e.g. imdb.com, user@mail.com) */
+const urlSegmentRe =
+  /(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?|[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}/g;
+
+/** Hyphenated compounds (e.g. Wi-Fi, KWF-u, rok-end-rol) */
+const hyphenSegmentRe = new RegExp(
+  `${wordSegmentRe.source}(?:-${wordSegmentRe.source})+`,
+  "g",
+);
 
 const textSegmentRe = new RegExp(
-  `${rockAndRollRe.source}|${wordSegmentRe.source}`,
+  `${rockAndRollRe.source}|${urlSegmentRe.source}|${hyphenSegmentRe.source}|${wordSegmentRe.source}`,
   "gi",
 );
+
+/** A word is foreign if it contains any letter outside the Serbian Latin alphabet */
+const foreignLetterRe = /[^a-pr-vzA-PR-VZ0-9\u010c\u010d\u0106\u0107\u0110\u0111\u0160\u0161\u017d\u017e]/;
+
+/** Strictly URL/email shaped: lowercase TLD so sentence boundaries ("kraj.Ali") don't match */
+const strictUrlRe =
+  /^(?:(?:[a-zA-Z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?|[^\s@]+@[^\s@]+\.[a-z]{2,})$/;
+
+/** Serbian case endings that may follow a hyphen after a foreign word/acronym */
+const caseSuffixes = new Set([
+  "a", "e", "i", "o", "u", "om", "em", "ju", "jem",
+  "ima", "ama", "ovima", "evima",
+  "ov", "ev", "ova", "eva", "ove", "eve", "ovu", "evu",
+  "ovi", "evi", "ovo", "evo", "ovog", "evog", "ovom", "evom",
+  "jev", "jeva", "jeve", "jevu", "jevi", "jevo", "jevog", "jevom",
+]);
 
 function isRockAndRollPhrase(segment: string): boolean {
   return /^rock(?:(?:[-\s]+and[-\s]+)|(?:'\s*n\s*'))roll$/i.test(segment);
 }
 
+function convertWord(word: string): string {
+  if (foreignLetterRe.test(word)) return word;
+  if (foreignWords.has(word.toLowerCase())) return word;
+  if (isRomanNumeral(word)) return word;
+  return cyrillizeWord(word);
+}
+
+function convertHyphenated(segment: string): string {
+  const parts = segment.split("-");
+  const anyForeign = parts.some(
+    (p) => foreignLetterRe.test(p) || foreignWords.has(p.toLowerCase()),
+  );
+  if (!anyForeign) return parts.map(convertWord).join("-");
+  // Foreign compound: keep parts Latin, but cyrillize Serbian case-ending
+  // suffixes (e.g. KWF-u → KWF-у)
+  return parts
+    .map((p) =>
+      caseSuffixes.has(p) && !foreignLetterRe.test(p) ? cyrillize(p) : p,
+    )
+    .join("-");
+}
+
 function cyrillizeText(text: string): string {
-  return text.replace(textSegmentRe, (word) => {
-    if (isRockAndRollPhrase(word)) return word;
-    if (/[wqyWQY]/.test(word)) return word;
-    if (foreignWords.has(word.toLowerCase())) return word;
-    if (isRomanNumeral(word)) return word;
-    return cyrillizeWord(word);
+  return text.replace(textSegmentRe, (segment) => {
+    if (isRockAndRollPhrase(segment)) return segment;
+    if (segment.includes(".") || segment.includes("@") || segment.includes("/")) {
+      if (strictUrlRe.test(segment)) return segment;
+      // Not actually a URL (e.g. sentence boundary "kraj.Ali") — convert parts
+      return segment.replace(wordSegmentRe, convertWord);
+    }
+    if (segment.includes("-")) return convertHyphenated(segment);
+    return convertWord(segment);
   });
 }
 
