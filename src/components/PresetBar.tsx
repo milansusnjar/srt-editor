@@ -1,4 +1,5 @@
 import { Preset } from "../types";
+import posthog from "posthog-js";
 
 interface PresetBarProps {
   presets: Preset[];
@@ -48,7 +49,11 @@ export function PresetBar({ presets, activePresetId, onApply, onClear, onSave, o
         <button
           class="btn-secondary"
           disabled={!canDelete}
-          onClick={() => active && onDelete(active.id)}
+          onClick={() => {
+            if (!active) return;
+            posthog.capture("preset_deleted", { preset_id: active.id, preset_name: active.name });
+            onDelete(active.id);
+          }}
         >
           Delete
         </button>

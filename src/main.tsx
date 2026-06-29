@@ -16,6 +16,12 @@ import { Modal } from "./components/Modal";
 import { DiffView } from "./components/DiffView";
 import { LogView } from "./components/LogView";
 import { InfoView } from "./components/InfoView";
+import posthog from "posthog-js";
+
+posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+  defaults: "2026-05-30",
+});
 
 const VERSION = "1.14";
 
@@ -37,6 +43,7 @@ function App() {
   const applyPreset = useCallback((id: string) => {
     const preset = findPreset(id);
     if (!preset) return;
+    posthog.capture("preset_applied", { preset_id: id, preset_name: preset.name, builtin: preset.builtin });
     setAllStates(preset.states);
     setActivePresetId(id);
   }, [findPreset, setAllStates, setActivePresetId]);
@@ -54,14 +61,17 @@ function App() {
       };
     }
     const id = savePreset(name, states);
+    posthog.capture("preset_saved", { preset_id: id, preset_name: name.trim() });
     setActivePresetId(id);
   }, [pluginStates, savePreset, setActivePresetId]);
 
   // Manually editing a plugin means the config no longer matches a preset.
   const handleToggle = useCallback((id: string) => {
     setActivePresetId(null);
+    const currentState = pluginStates.get(id);
+    posthog.capture("plugin_toggled", { plugin_id: id, enabled: !currentState?.enabled });
     togglePlugin(id);
-  }, [togglePlugin, setActivePresetId]);
+  }, [togglePlugin, setActivePresetId, pluginStates]);
 
   const handleParamChange = useCallback((pid: string, key: string, value: number) => {
     setActivePresetId(null);
@@ -76,6 +86,8 @@ function App() {
   const handleFiles = useCallback((fileList: FileList) => {
     const srtFiles = Array.from(fileList).filter((f) => f.name.endsWith(".srt"));
     if (srtFiles.length === 0) return;
+
+    posthog.capture("files_loaded", { file_count: srtFiles.length });
 
     setHasRun(false);
     setProcessingLogs([]);
@@ -191,10 +203,17 @@ function App() {
     setFiles(updatedFiles);
     setProcessingLogs(logs);
     setHasRun(true);
+    posthog.capture("plugins_run", {
+      file_count: files.length,
+      active_plugin_count: activePlugins.size,
+      active_plugins: [...activePlugins],
+    });
   }, [files, pluginStates]);
 
   const downloadAll = useCallback(() => {
     const changed = files.filter((f) => fileChanged(f));
+    if (changed.length === 0) return;
+    posthog.capture("files_downloaded_all", { file_count: changed.length });
     for (const file of changed) downloadFile(file, pluginStates);
   }, [files, pluginStates]);
 

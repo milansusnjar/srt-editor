@@ -3,6 +3,7 @@ import { SrtFile } from "../types";
 import { encodingLabel, encodingClass, fileChanged, getDownloadName, downloadFile } from "../utils/files";
 import { CloseIcon, DownloadIcon, DiffIcon, InfoIcon } from "../utils/icons";
 import { PluginStateEntry } from "../hooks/usePluginState";
+import posthog from "posthog-js";
 
 interface FileItemProps {
   file: SrtFile;
@@ -22,6 +23,7 @@ export function FileItem({ file, hasRun, pluginStates, onShowDiff, onShowInfo, o
 
   const handleRemove = (e: MouseEvent) => {
     e.stopPropagation();
+    posthog.capture("file_removed");
     const el = rowRef.current;
     if (el) {
       // Phase 1: fade out + slide
@@ -67,14 +69,14 @@ export function FileItem({ file, hasRun, pluginStates, onShowDiff, onShowInfo, o
           <button
             class="file-action-btn"
             title="Show diff"
-            onClick={(e) => { e.stopPropagation(); onShowDiff(file); }}
+            onClick={(e) => { e.stopPropagation(); posthog.capture("diff_viewed"); onShowDiff(file); }}
           >
             <DiffIcon />
           </button>
           <button
             class="file-action-btn"
             title="Download"
-            onClick={(e) => { e.stopPropagation(); downloadFile(file, pluginStates); }}
+            onClick={(e) => { e.stopPropagation(); posthog.capture("file_downloaded"); downloadFile(file, pluginStates); }}
           >
             <DownloadIcon />
           </button>

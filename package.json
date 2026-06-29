@@ -20,6 +20,7 @@
   "dependencies": {
     "@preact/preset-vite": "^2.10.3",
     "diff": "^8.0.3",
+    "posthog-js": "^1.396.0",
     "preact": "^10.28.3",
     "serve": "^14.2.5"
   }
