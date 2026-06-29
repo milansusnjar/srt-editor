@@ -155,6 +155,8 @@ function App() {
 
         if (removed > 0 && plugin.id === "removeAds") {
           pluginSummaries.push(`Removed ${removed} ad subtitle${removed > 1 ? "s" : ""}`);
+        } else if (removed > 0 && plugin.id === "mergeContinuations") {
+          pluginSummaries.push(`Merged ${removed} subtitle continuation${removed > 1 ? "s" : ""}`);
         } else if (changes > 0) {
           if (plugin.id === "cyrillization") {
             pluginSummaries.push("Transliterated to Cyrillic");

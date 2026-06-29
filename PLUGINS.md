@@ -39,7 +39,38 @@ Hajde.
 -Spreman?
 ```
 
-**Execution order:** Runs after Remove Ads and before Cyrillization.
+**Execution order:** Runs after Remove Ads and before Merge Continuations.
+
+---
+
+## Merge Continuations
+
+**Purpose:** Merges adjacent subtitles when the second subtitle continues the same sentence after a very short pause.
+
+**Parameters:**
+- **Max Gap (ms)** (default: `200`) — Maximum allowed pause between subtitles. The gap must be strictly below this value.
+- **Max Merged Length** (default: `42`) — Maximum visible character count for the merged text.
+- **Max Merged Duration (ms)** (default: `8000`) — Maximum allowed duration for the merged subtitle.
+
+**How it works:**
+1. Checks adjacent subtitle pairs in order.
+2. Merges only when the subtitle gap is non-negative and below the configured max gap.
+3. Does not merge if the first subtitle ends with `.`, `?`, `!`, `…`, `:`, or `;`.
+4. Does not merge if the merged visible text exceeds the length limit or the merged duration exceeds the duration limit.
+5. Preserves formatting tags while excluding them from visible length checks.
+6. Skips multi-speaker dialog subtitles with multiple dash-prefixed lines.
+
+**Example:**
+```
+Čini se Van Gog,
+ali nije mi poznata.
+```
+becomes:
+```
+Čini se Van Gog, ali nije mi poznata.
+```
+
+**Execution order:** Runs after Dialog Dash and before Cyrillization/Long Lines.
 
 ---
 
@@ -65,7 +96,7 @@ Hajde.
 3. If the input file's encoding is `windows-1250`, it is automatically changed to `windows-1251` on output. UTF-8 files remain UTF-8.
 4. Toggling Cyrillization on automatically enables the Extension plugin with `cyr.sr`, so downloaded files get `.cyr.sr` inserted before the `.srt` extension (e.g. `Movie.Name.srt` → `Movie.Name.cyr.sr.srt`).
 
-**Execution order:** Cyrillization runs after Dialog Dash, before Long Lines, CPS, and Gap.
+**Execution order:** Cyrillization runs after Merge Continuations, before Long Lines, CPS, and Gap.
 
 ---
 
@@ -83,7 +114,7 @@ Hajde.
    - If the merged text fits within the max length, keep it as one line.
    - Otherwise, split into two lines at the word boundary closest to the midpoint, producing approximately equal-length lines.
 
-**Execution order:** Runs after Cyrillization and before CPS/Gap. Dialog Dash runs before Long Lines, so dash removal may shorten lines enough to avoid splitting.
+**Execution order:** Runs after Cyrillization and before CPS/Gap. Dialog Dash and Merge Continuations run before Long Lines, so text cleanup and subtitle merging happen before line re-splitting.
 
 ---
 
@@ -108,6 +139,22 @@ Hajde.
 
 **Example:**
 A subtitle with 60 characters and duration of 2 seconds has CPS = 30. With Max CPS = 25, the required duration is 60/25 = 2.4 seconds. The end time is extended by 400ms (if the next subtitle allows it).
+
+---
+
+## Time Shift
+
+**Purpose:** Moves every subtitle earlier or later by a fixed offset.
+
+**Parameter:**
+- **Offset (ms)** (default: `0`) — Positive values move subtitles later; negative values move subtitles earlier.
+
+**How it works:**
+1. Adds the configured offset to every subtitle start and end time.
+2. Start times are clipped at `00:00:00,000` when a negative offset would move them before zero.
+3. Subtitles whose end time is no longer after the start time are removed.
+
+**Execution order:** Runs after CPS and before Min Duration, so later duration/gap plugins can still enforce timing constraints.
 
 ---
 
@@ -174,7 +221,7 @@ CPS runs first (extends durations), then Min Duration (extends short subtitles),
 When Cyrillization is active, Windows-1250 is incompatible with Cyrillic characters. If the resulting encoding would be Windows-1250 (whether from "Keep original" on a 1250 file or explicitly selected), it is automatically overridden to Windows-1251. A note is added to the processing log.
 
 **Execution order:**
-Encoding runs after all content and timing transforms (Dialog Dash → Cyrillization → Long Lines → CPS → Min Duration → Gap → Encoding → Extension).
+Encoding runs after all content and timing transforms (Dialog Dash → Merge Continuations → Cyrillization → Long Lines → CPS → Time Shift → Min Duration → Gap → Encoding → Extension).
 
 ---
 
