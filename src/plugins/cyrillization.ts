@@ -154,24 +154,40 @@ function convertHyphenated(segment: string): string {
     .join("-");
 }
 
-function cyrillizeText(text: string): string {
-  return text.replace(textSegmentRe, (segment) => {
-    if (isRockAndRollPhrase(segment)) return segment;
-    if (segment.includes(".") || segment.includes("@") || segment.includes("/")) {
-      if (strictUrlRe.test(segment)) return segment;
-      // Not actually a URL (e.g. sentence boundary "kraj.Ali") — convert parts
-      return segment.replace(wordSegmentRe, convertWord);
-    }
-    if (segment.includes("-")) return convertHyphenated(segment);
-    return convertWord(segment);
-  });
+function convertHourMarkers(text: string, hourMarker: string): string {
+  return text.replace(/(\d)(\s*)[hH]\b/g, `$1$2${hourMarker}`);
+}
+
+function convertTextSegment(segment: string): string {
+  if (isRockAndRollPhrase(segment)) return segment;
+
+  if (segment.includes(".") || segment.includes("@") || segment.includes("/")) {
+    if (strictUrlRe.test(segment)) return segment;
+    // Not actually a URL (e.g. sentence boundary "kraj.Ali") — convert parts
+    return segment.replace(wordSegmentRe, convertWord);
+  }
+
+  if (segment.includes("-")) return convertHyphenated(segment);
+
+  return convertWord(segment);
+}
+
+function cyrillizeText(text: string, hourMarker = "ч"): string {
+  const textWithHourMarkers = convertHourMarkers(text, hourMarker);
+  return textWithHourMarkers.replace(textSegmentRe, convertTextSegment);
+}
+
+function isUppercaseLine(line: string): boolean {
+  const text = line.replace(/(<[^>]+>|\{[^}]+})/g, "");
+  return text !== text.toLowerCase() && text === text.toUpperCase();
 }
 
 function cyrillizeLine(line: string): string {
   // Split into tag tokens and text tokens; tags are preserved as-is
   const parts = line.split(/(<[^>]+>|\{[^}]+})/);
+  const hourMarker = isUppercaseLine(line) ? "Ч" : "ч";
   return parts
-    .map((part, idx) => (idx % 2 === 1 ? part : cyrillizeText(part)))
+    .map((part, idx) => (idx % 2 === 1 ? part : cyrillizeText(part, hourMarker)))
     .join("");
 }
 

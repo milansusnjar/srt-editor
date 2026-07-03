@@ -84,6 +84,21 @@ describe("Cyrillization plugin", () => {
     expect(run(["h2o"])).toEqual(["h2o"]);
   });
 
+  it("cyrillizes h as an hour marker after numbers", () => {
+    expect(run(["Počinje u 17 h."])).toEqual(["Почиње у 17 ч."]);
+    expect(run(["Počinje u 17h."])).toEqual(["Почиње у 17ч."]);
+    expect(run(["Traje 2 H"])).toEqual(["Траје 2 ч"]);
+  });
+
+  it("uses uppercase hour marker when the whole line is uppercase", () => {
+    expect(run(["DOĐITE U 17 H OBAVEZNO."])).toEqual([
+      "ДОЂИТЕ У 17 Ч ОБАВЕЗНО.",
+    ]);
+    expect(run(["<i>DOĐITE U 17H OBAVEZNO.</i>"])).toEqual([
+      "<i>ДОЂИТЕ У 17Ч ОБАВЕЗНО.</i>",
+    ]);
+  });
+
   it("preserves Roman numerals (2+ chars, uppercase)", () => {
     expect(run(["Luj IV"])).toEqual(["Луј IV"]);
     expect(run(["U II svetskom ratu"])).toEqual(["У II светском рату"]);
