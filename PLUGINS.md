@@ -24,9 +24,10 @@
 **Rules:**
 1. First speaker: remove `- ` (dash + space) entirely.
 2. Other speakers: remove space after dash (`- Text` → `-Text`).
-3. Tags before the dash (`{\an8}`, `{i}`, `<b>`, etc.) are preserved.
-4. Regular dashes (preceded by a lowercase letter, e.g. `me - just thinking`) are left unchanged.
-5. Works on single-line, multi-line, and two-speakers-in-one-line subtitles.
+3. Mid-line speaker changes are handled too (`Something. - Koliko?` → `Something. -Koliko?`).
+4. Tags before the dash (`{\an8}`, `{i}`, `<b>`, etc.) are preserved.
+5. Regular dashes (preceded by a lowercase letter, e.g. `me - just thinking`) are left unchanged.
+6. Works on single-line, multi-line, and two-speakers-in-one-line subtitles.
 
 **Example:**
 ```

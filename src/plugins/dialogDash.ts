@@ -20,6 +20,37 @@ function parseDialogLine(line: string): { tags: string; rest: string } | null {
   return null;
 }
 
+/** Lowercase letter before dash means a regular dash, not dialog. */
+function isDialogDashAt(str: string, offset: number): boolean {
+  const charBefore = offset > 0 ? str[offset - 1] : "";
+  return !/\p{Ll}/u.test(charBefore);
+}
+
+/** Remove space after mid-line dialog dashes: " - Text" → " -Text". */
+function fixMidLineDialogDashes(line: string): string {
+  return line.replace(/ - /g, (match, offset, str) =>
+    isDialogDashAt(str, offset) ? " -" : match,
+  );
+}
+
+function hasDialogMarkers(lines: string[]): boolean {
+  return lines.some(
+    (line) =>
+      parseDialogLine(line) !== null ||
+      fixMidLineDialogDashes(line) !== line,
+  );
+}
+
+function processLine(line: string, isFirstLine: boolean): string {
+  const parsed = parseDialogLine(line);
+  const withoutLineStart = parsed
+    ? isFirstLine
+      ? parsed.tags + parsed.rest
+      : parsed.tags + "-" + parsed.rest
+    : line;
+  return fixMidLineDialogDashes(withoutLineStart);
+}
+
 export const dialogDashPlugin: PluginConfig = {
   id: "dialogDash",
   name: "Dialog Dash",
@@ -29,27 +60,9 @@ export const dialogDashPlugin: PluginConfig = {
   params: [],
   run(subtitles: Subtitle[]): Subtitle[] {
     return subtitles.map((sub) => {
-      // Only process if at least one line starts with "- "
-      if (!sub.lines.some((line) => parseDialogLine(line) !== null)) return sub;
+      if (!hasDialogMarkers(sub.lines)) return sub;
 
-      const newLines = sub.lines.map((line, i) => {
-        const parsed = parseDialogLine(line);
-        if (!parsed) return line;
-
-        if (i === 0) {
-          // First line: remove dash and space entirely
-          // Also handle mid-line second speaker: " - " → " -"
-          return parsed.tags + parsed.rest.replace(/ - /g, (match, offset, str) => {
-            const charBefore = offset > 0 ? str[offset - 1] : "";
-            // Lowercase letter before dash means it's a regular dash, not dialog
-            if (/\p{Ll}/u.test(charBefore)) return match;
-            return " -";
-          });
-        } else {
-          // Other lines: keep dash, remove space
-          return parsed.tags + "-" + parsed.rest;
-        }
-      });
+      const newLines = sub.lines.map((line, i) => processLine(line, i === 0));
 
       return { ...sub, lines: newLines };
     });

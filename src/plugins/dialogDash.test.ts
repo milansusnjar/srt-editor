@@ -138,4 +138,27 @@ describe("Dialog Dash plugin", () => {
     expect(result[0].lines).toEqual(["Regular subtitle."]);
     expect(result[1].lines).toEqual(["Two lines", "no dashes"]);
   });
+
+  it("removes space after mid-line dialog dash on continuation line", () => {
+    const result = run([
+      sub([
+        "Ne, to je za mog oca.",
+        "Skupljam novac za njega. - Koliko?",
+      ]),
+    ]);
+    expect(result[0].lines).toEqual([
+      "Ne, to je za mog oca.",
+      "Skupljam novac za njega. -Koliko?",
+    ]);
+  });
+
+  it("removes space after mid-line dialog dash on first line", () => {
+    const result = run([
+      sub(["70.000. - Stvarno?!", "Šta je s tvojim ocem?"]),
+    ]);
+    expect(result[0].lines).toEqual([
+      "70.000. -Stvarno?!",
+      "Šta je s tvojim ocem?",
+    ]);
+  });
 });
