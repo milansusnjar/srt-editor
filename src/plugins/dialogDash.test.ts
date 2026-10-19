@@ -161,4 +161,44 @@ describe("Dialog Dash plugin", () => {
       "Šta je s tvojim ocem?",
     ]);
   });
+
+  it("leaves mid-line dash before a number unchanged", () => {
+    const result = run([sub(["Treba mi od 5 - 10 minuta.", "Od 1990. - 2000."])]);
+    expect(result[0].lines).toEqual(["Treba mi od 5 - 10 minuta.", "Od 1990. - 2000."]);
+  });
+
+  it("leaves mid-line dash before a lowercase word unchanged", () => {
+    const result = run([sub(["OK - idemo."])]);
+    expect(result[0].lines).toEqual(["OK - idemo."]);
+  });
+
+  it("removes space after mid-line dialog dash followed by tags", () => {
+    const result = run([sub(["Šta je bilo? - <i>Ništa.</i>"])]);
+    expect(result[0].lines).toEqual(["Šta je bilo? -<i>Ništa.</i>"]);
+  });
+
+  it("treats Serbian uppercase letters after a mid-line dash as dialog", () => {
+    const result = run([
+      sub(["Gdje si? - Šta?", "Dobro. - Đorđe!"]),
+      sub(["Stani. - Čekaj!", "Hej. - Ćao.", "Izvini. - Žao mi je."]),
+      sub(["Ко је то? - Шта?", "Добро. - Ђорђе! - Чекај! - Ћао. - Жао ми је."]),
+      sub(["Gotovo. - ǅemper?"]),
+    ]);
+    expect(result[0].lines).toEqual(["Gdje si? -Šta?", "Dobro. -Đorđe!"]);
+    expect(result[1].lines).toEqual(["Stani. -Čekaj!", "Hej. -Ćao.", "Izvini. -Žao mi je."]);
+    expect(result[2].lines).toEqual(["Ко је то? -Шта?", "Добро. -Ђорђе! -Чекај! -Ћао. -Жао ми је."]);
+    expect(result[3].lines).toEqual(["Gotovo. -ǅemper?"]);
+  });
+
+  it("leaves mid-line dash before Serbian lowercase letters unchanged", () => {
+    const lines = ["OK - šta god.", "Da. - đubre.", "Hm. - čekaj.", "Pa. - ćao.", "Eh. - žao mi je.", "ОК - шта год."];
+    const result = run([sub(lines)]);
+    expect(result[0].lines).toEqual(lines);
+  });
+
+  it("leaves dash after Serbian lowercase letters unchanged", () => {
+    const lines = ["Idemo kroz grad š - Ne.", "Muž - Žena.", "Ноћ - Дан."];
+    const result = run([sub(lines)]);
+    expect(result[0].lines).toEqual(lines);
+  });
 });

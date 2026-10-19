@@ -20,10 +20,17 @@ function parseDialogLine(line: string): { tags: string; rest: string } | null {
   return null;
 }
 
-/** Lowercase letter before dash means a regular dash, not dialog. */
+/**
+ * A mid-line " - " is a dialog dash only when it isn't preceded by a lowercase
+ * letter and the text after it (past any tags) starts with an uppercase letter.
+ * "me - just", "5 - 10" and "OK - idemo" are regular dashes.
+ */
 function isDialogDashAt(str: string, offset: number): boolean {
   const charBefore = offset > 0 ? str[offset - 1] : "";
-  return !/\p{Ll}/u.test(charBefore);
+  if (/\p{Ll}/u.test(charBefore)) return false;
+  const after = str.slice(offset + 3);
+  const tags = LEADING_TAGS_RE.exec(after)?.[1] ?? "";
+  return /^[\p{Lu}\p{Lt}]/u.test(after.slice(tags.length));
 }
 
 /** Remove space after mid-line dialog dashes: " - Text" → " -Text". */
